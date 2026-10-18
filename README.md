@@ -15,7 +15,8 @@ Scores are saved in `localStorage`, so a game survives page refreshes on the sam
 - **Leaderboard:** players are ranked by score. Tied players share a rank (1, 1, 3), and gold, silver and bronze accents go to the top three. Phones get compact cards and larger screens get a table.
 - **The Night's History:** a log of every round with the winner, runner-up, points, and the date and time it was recorded, newest first.
 - **Champion screen:** shows the final standings. Tied leaders become joint champions. You can resume an ended game.
-- **New Game** keeps the players and clears scores and history, after asking for confirmation. There is no "reset everything" option, so players are never wiped in one tap.
+- **New Game** saves the current game to **Past Games**, then starts fresh scores with the same players (after a confirmation). Nothing is ever deleted, and there is no "reset everything" option.
+- **Past Games:** every saved game with its date, time span, number of rounds, champion and final standings. Tap a game to see its standings and full round log. A "Crowns won" tally counts titles per player across all games.
 - **Resilient storage:** a broken save is backed up and replaced with a fresh table, and a partly damaged save is repaired. Other tabs stay in sync.
 - **Accessibility:** keyboard navigation, focus trapping in dialogs, Escape to close, and screen-reader text for the standings. Animations are reduced when `prefers-reduced-motion` is set.
 

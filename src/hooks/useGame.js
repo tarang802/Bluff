@@ -34,9 +34,19 @@ function reducer(state, action) {
       return { ...state, endedAt: action.at };
     case 'RESUME_GAME':
       return state.endedAt ? { ...state, endedAt: null } : state;
-    case 'NEW_GAME':
-      // Same friends, fresh scores.
-      return { ...state, rounds: [], startedAt: null, endedAt: null };
+    case 'NEW_GAME': {
+      // Same friends, fresh scores — the finished game moves to the archive.
+      if (!state.rounds.length) return { ...state, startedAt: null, endedAt: null };
+      const past = {
+        id: action.id,
+        startedAt: state.startedAt ?? state.rounds[0].at,
+        endedAt: state.endedAt ?? action.at,
+        crowned: state.endedAt != null,
+        players: state.players.map(({ id, name }) => ({ id, name })),
+        rounds: state.rounds,
+      };
+      return { ...state, archive: [...state.archive, past], rounds: [], startedAt: null, endedAt: null };
+    }
     case 'HYDRATE':
       return action.game;
     default:

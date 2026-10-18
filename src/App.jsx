@@ -4,6 +4,7 @@ import Header from './components/Header.jsx';
 import HeroSection from './components/HeroSection.jsx';
 import Leaderboard from './components/Leaderboard.jsx';
 import RoundHistory from './components/RoundHistory.jsx';
+import PastGames from './components/PastGames.jsx';
 import AddPlayersModal from './components/AddPlayersModal.jsx';
 import RecordWinnerModal from './components/RecordWinnerModal.jsx';
 import ChampionScreen from './components/ChampionScreen.jsx';
@@ -222,14 +223,13 @@ function BluffNight() {
     setConfirm({
       eyebrow: 'Fresh deck',
       title: 'Start a new game?',
-      message: "This clears every score and the night's history. Your players stay seated for the next game.",
-      confirmLabel: 'Start New Game',
-      tone: 'danger',
+      message: `This game (${roundsPlayed} ${roundsPlayed === 1 ? 'round' : 'rounds'}) is saved to Past Games, then the scores start from zero. Your players stay seated.`,
+      confirmLabel: 'Save & Start New',
       onConfirm: () => {
-        dispatch({ type: 'NEW_GAME' });
+        dispatch({ type: 'NEW_GAME', id: uid(), at: Date.now() });
         setChampionOpen(false);
         setFlash(null);
-        toast.success('New game ready', { message: 'Same table, fresh scores. Shuffle up.' });
+        toast.success('Game saved to Past Games', { message: 'Same table, fresh scores. Shuffle up.' });
       },
     });
   };
@@ -288,6 +288,12 @@ function BluffNight() {
           {game.players.length > 0 && (
             <div className="mt-16 sm:mt-24">
               <RoundHistory rounds={game.rounds} players={game.players} />
+            </div>
+          )}
+
+          {game.archive.length > 0 && (
+            <div className="mt-16 sm:mt-24">
+              <PastGames archive={game.archive} />
             </div>
           )}
         </div>
