@@ -67,9 +67,10 @@ export default function RoundHistory({ rounds, players }) {
                     </div>
                     <time
                       dateTime={new Date(r.at).toISOString()}
-                      className="w-[4.5rem] shrink-0 text-right text-xs text-ash lining-nums tabular-nums sm:w-28"
+                      className="flex shrink-0 flex-col items-end text-right leading-tight lining-nums tabular-nums sm:w-32"
                     >
-                      {formatTimestamp(r.at)}
+                      <span className="text-xs text-ivory/70">{formatTimestamp(r.at).time}</span>
+                      <span className="mt-0.5 text-[0.68rem] text-ash">{formatTimestamp(r.at).date}</span>
                     </time>
                   </div>
                 </motion.li>

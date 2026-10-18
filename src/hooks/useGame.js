@@ -37,8 +37,6 @@ function reducer(state, action) {
     case 'NEW_GAME':
       // Same friends, fresh scores.
       return { ...state, rounds: [], startedAt: null, endedAt: null };
-    case 'RESET':
-      return emptyGame();
     case 'HYDRATE':
       return action.game;
     default:

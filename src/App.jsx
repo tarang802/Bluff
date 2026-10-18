@@ -234,26 +234,6 @@ function BluffNight() {
     });
   };
 
-  const handleReset = () => {
-    if (!game.players.length && !roundsPlayed) {
-      toast.info('Nothing to reset', { message: 'The table is already empty.' });
-      return;
-    }
-    setConfirm({
-      eyebrow: 'Clear the house',
-      title: 'Reset everything?',
-      message: 'This removes all players, scores and history from this device. It cannot be undone.',
-      confirmLabel: 'Reset Everything',
-      tone: 'danger',
-      onConfirm: () => {
-        dispatch({ type: 'RESET' });
-        setChampionOpen(false);
-        setFlash(null);
-        toast.success('The house is cleared', { message: 'An empty table awaits new players.' });
-      },
-    });
-  };
-
   const runConfirm = () => {
     const action = confirm?.onConfirm;
     setConfirm(null);
@@ -314,14 +294,9 @@ function BluffNight() {
       </main>
 
       <footer className="border-t border-gold/10 pb-28 md:pb-0">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-10 text-center sm:flex-row sm:justify-between sm:px-6 sm:text-left lg:px-8">
-          <div>
-            <SuitRow className="text-xs" />
-            <p className="mt-2 text-xs text-ash">Bluff Night · Scores live only in this browser.</p>
-          </div>
-          <button type="button" className="btn btn-sm btn-ghost text-ash" onClick={handleReset}>
-            Reset Everything
-          </button>
+        <div className="mx-auto flex max-w-6xl flex-col items-center px-4 py-10 text-center sm:px-6 lg:px-8">
+          <SuitRow className="text-xs" />
+          <p className="mt-2 text-xs text-ash">Bluff Night · Scores live only in this browser.</p>
         </div>
       </footer>
 

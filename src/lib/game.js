@@ -107,13 +107,14 @@ export function tierFor(player) {
 }
 
 const timeFmt = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
-const dayFmt = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' });
+const dateFmt = new Intl.DateTimeFormat(undefined, { weekday: 'short', day: 'numeric', month: 'short' });
+const dateYearFmt = new Intl.DateTimeFormat(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
 
+/** Date and time of a round, e.g. { date: 'Sun, 19 Oct', time: '9:42 PM' }. */
 export function formatTimestamp(ms) {
-  const date = new Date(ms);
-  const now = new Date();
-  const sameDay = date.toDateString() === now.toDateString();
-  return sameDay ? timeFmt.format(date) : `${dayFmt.format(date)} · ${timeFmt.format(date)}`;
+  const d = new Date(ms);
+  const thisYear = d.getFullYear() === new Date().getFullYear();
+  return { date: (thisYear ? dateFmt : dateYearFmt).format(d), time: timeFmt.format(d) };
 }
 
 export function pad2(n) {
