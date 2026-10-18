@@ -39,7 +39,7 @@ export default function ConfirmationDialog({ config, onCancel, onConfirm }) {
       }
     >
       {c.warnings?.length > 0 && (
-        <div className="border border-wine-bright/40 bg-wine/15 px-4 py-3.5">
+        <div className="notice px-4 py-3.5">
           <p className="mb-2.5 flex items-center gap-2 font-caps text-[0.62rem] font-semibold tracking-[0.2em] text-[#f0b7c1] uppercase">
             <TriangleAlert size={14} strokeWidth={2} aria-hidden="true" />
             {c.warningTitle ?? 'What happens next'}

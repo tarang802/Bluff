@@ -354,7 +354,8 @@ function BluffNight() {
       <main className="pb-16 md:pb-20">
         <HeroSection playerCount={game.players.length} roundsPlayed={roundsPlayed} champions={champions} />
 
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        {/* One content width for every section below the hero, so all edges line up. */}
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <Divider className="mb-12 sm:mb-16" glyph="♠" />
 
           <div id="leaderboard" className="scroll-mt-6">

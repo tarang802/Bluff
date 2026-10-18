@@ -47,7 +47,7 @@ export default function Header({ phase, roundsPlayed, onNewGame }) {
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <SessionIndicator phase={phase} roundsPlayed={roundsPlayed} />
-          <button type="button" onClick={onNewGame} className="btn btn-sm btn-ghost !px-2.5 sm:!px-4" aria-label="Start a new game">
+          <button type="button" onClick={onNewGame} className="btn btn-sm btn-ghost min-w-10 !px-2.5 sm:!px-4" aria-label="Start a new game">
             <RotateCcw size={14} strokeWidth={1.8} aria-hidden="true" />
             <span className="hidden sm:inline">New Game</span>
           </button>

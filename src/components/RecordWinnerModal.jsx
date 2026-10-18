@@ -103,12 +103,12 @@ export default function RecordWinnerModal({ open, onClose, players, standings, r
               aria-pressed={Boolean(place)}
               aria-label={`${p.name}, ${score} ${score === 1 ? 'point' : 'points'}${place ? `, marked ${PLACE_LABEL[place]} place` : ''}`}
               onClick={() => pick(p.id)}
-              className={`group relative flex h-full flex-col items-center gap-1.5 border px-2 pt-3 pb-2.5 text-center transition-all duration-200 sm:gap-2.5 sm:px-3 sm:pt-4 sm:pb-3.5 ${
+              className={`card group flex h-full flex-col items-center gap-1.5 px-2 pt-3 pb-2.5 text-center transition-all duration-200 sm:gap-2.5 sm:px-3 sm:pt-4 sm:pb-3.5 ${
                 place === 1
                   ? 'border-gold bg-[linear-gradient(180deg,rgb(201_162_74/0.22),rgb(201_162_74/0.05))] shadow-[0_0_0_1px_rgb(201_162_74/0.6),0_16px_30px_-16px_rgb(201_162_74/0.7)]'
                   : place === 2
                     ? 'border-silver/70 bg-[linear-gradient(180deg,rgb(200_204_212/0.12),rgb(200_204_212/0.03))] shadow-[0_0_0_1px_rgb(200_204_212/0.35)]'
-                    : 'border-ivory/10 bg-ink/50 hover:border-gold/45 hover:bg-gold/[0.04]'
+                    : 'card-interactive'
               }`}
             >
               <span

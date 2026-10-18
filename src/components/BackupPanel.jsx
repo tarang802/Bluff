@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Download, Share, Smartphone, Upload } from 'lucide-react';
 import { useInstallPrompt } from '../hooks/useInstallPrompt.js';
+import { SectionTitle } from './Ornaments.jsx';
 
 /** Save every game to a file, or bring one back (merged, never overwritten). */
 export default function BackupPanel({ onBackup, onRestoreFile, onInstalled }) {
@@ -10,13 +11,10 @@ export default function BackupPanel({ onBackup, onRestoreFile, onInstalled }) {
   const showInstall = !installed && (canPrompt || ios);
 
   return (
-    <section aria-labelledby="backup-title" className="mx-auto max-w-3xl">
+    <section aria-labelledby="backup-title">
+      <SectionTitle id="backup-title" eyebrow="The Vault" title="BACKUP & RESTORE" suit="♥" />
       <div className="panel frame-corners px-5 py-6 sm:px-7">
-        <p className="eyebrow text-[0.58rem] text-smoke">The Vault</p>
-        <h2 id="backup-title" className="mt-1.5 font-caps text-[0.95rem] font-semibold tracking-[0.14em] text-ivory sm:text-lg sm:tracking-[0.18em]">
-          BACKUP, RESTORE &amp; INSTALL
-        </h2>
-        <p className="mt-2 max-w-xl text-sm leading-relaxed text-smoke">
+        <p className="max-w-xl text-sm leading-relaxed text-smoke">
           Scores live only on this phone. Save a backup file to keep them safe, or restore one on a new phone. Restoring
           merges with what&apos;s here — nothing is deleted.
         </p>

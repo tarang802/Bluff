@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { Crown, UserPlus } from 'lucide-react';
-import { AnimatedNumber, Avatar, Divider, SuitRow } from './Ornaments.jsx';
+import { AnimatedNumber, Avatar, Divider, SectionTitle, SuitRow } from './Ornaments.jsx';
 import { MIN_PLAYERS, tierFor } from '../lib/game.js';
 
 const ROW_TIER = {
@@ -56,9 +56,10 @@ function Row({ player, flash }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -12 }}
       transition={{ type: 'spring', stiffness: 380, damping: 34 }}
-      className={`relative grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 overflow-hidden border px-3 py-3 sm:gap-4 sm:px-4 md:grid-cols-[5.5rem_1fr_9rem_8rem] md:gap-0 md:border-x-0 md:border-t-0 md:px-0 md:py-4 ${
-        ROW_TIER[tier] ?? 'border-ivory/8 bg-char/60 md:bg-transparent'
-      } ${tier ? '' : 'md:border-ivory/8'} ${player.rank === 1 && tier === 'gold' ? 'sheen' : ''}`}
+      // Phones: the shared card. Desktop: a line inside the framed table.
+      className={`card grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 overflow-hidden px-3 py-3 sm:gap-4 sm:px-4 md:grid-cols-[5.5rem_1fr_9rem_8rem] md:gap-0 md:border-x-0 md:border-t-0 md:px-0 md:py-4 md:shadow-none ${
+        ROW_TIER[tier] ?? 'md:border-ivory/8 md:bg-none'
+      } ${player.rank === 1 && tier === 'gold' ? 'sheen' : ''}`}
     >
       {tier && <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-[2px] ${BAR[tier]}`} />}
       {isFlashing && (
@@ -90,7 +91,7 @@ function Row({ player, flash }) {
         <Avatar name={player.name} tier={tier} size="md" />
         <div className="min-w-0">
           <p className="flex items-center gap-2">
-            <span className={`truncate font-display text-xl leading-tight font-semibold sm:text-[1.4rem] ${tier === 'gold' ? 'text-ivory' : 'text-ivory/90'}`}>
+            <span className={`line-clamp-2 font-display text-xl leading-tight font-semibold break-words sm:text-[1.4rem] md:line-clamp-1 ${tier === 'gold' ? 'text-ivory' : 'text-ivory/90'}`}>
               {player.name}
             </span>
             {player.rank === 1 && tier === 'gold' && (
@@ -136,15 +137,14 @@ function Row({ player, flash }) {
 export default function Leaderboard({ standings, flash, onAddPlayers, toolbar, footnote, closingAction }) {
   return (
     <section aria-labelledby="leaderboard-title" className="relative">
-      <div className="mb-6 flex flex-col gap-6">
-        <div>
-          <p className="eyebrow">The Leaderboard</p>
-          <h2 id="leaderboard-title" className="mt-2 font-display text-4xl font-semibold text-ivory sm:text-5xl">
-            The Standings
-          </h2>
-        </div>
-        {toolbar}
-      </div>
+      <SectionTitle
+        id="leaderboard-title"
+        eyebrow="The Leaderboard"
+        title="THE STANDINGS"
+        suit="♠"
+        meta={standings.length ? `${standings.length} ${standings.length === 1 ? 'player' : 'players'}` : null}
+      />
+      {toolbar && <div className="mb-6">{toolbar}</div>}
 
       {standings.length === 0 ? (
         <EmptyState onAddPlayers={onAddPlayers} />

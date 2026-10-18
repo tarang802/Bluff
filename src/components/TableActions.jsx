@@ -60,7 +60,7 @@ export function EndGameAction({ onEnd }) {
 /** Shown under the final standings once a game has ended. */
 export function GameOverNotice({ onNewGame, onResume }) {
   return (
-    <div className="w-full max-w-md border border-wine-bright/40 bg-wine/15 px-4 py-4 text-left sm:px-5">
+    <div className="notice w-full max-w-md px-4 py-4 text-left sm:px-5">
       <p className="flex items-center gap-2 font-caps text-[0.66rem] font-semibold tracking-[0.22em] text-[#f0b7c1] uppercase">
         <Lock size={14} strokeWidth={2} aria-hidden="true" />
         This game is over

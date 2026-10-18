@@ -18,7 +18,7 @@ export default function RoundHistory({ rounds, players, now, onEdit }) {
   const visible = expanded ? entries : entries.slice(0, PREVIEW);
 
   return (
-    <section aria-labelledby="history-title" className="mx-auto max-w-3xl">
+    <section aria-labelledby="history-title">
       <SectionTitle
         id="history-title"
         eyebrow="The Ledger"
@@ -70,7 +70,7 @@ export default function RoundHistory({ rounds, players, now, onEdit }) {
                               type="button"
                               onClick={() => onEdit(r.id)}
                               aria-label={`Edit round ${r.number}, ${formatCountdown(left)} left`}
-                              className="mt-1.5 inline-flex min-h-8 items-center gap-1.5 border border-gold/40 px-2.5 font-caps text-[0.58rem] font-semibold tracking-[0.16em] text-gold-bright uppercase transition-colors hover:bg-gold/10"
+                              className="mt-1.5 inline-flex min-h-10 items-center gap-1.5 border border-gold/40 px-3 font-caps text-[0.58rem] font-semibold tracking-[0.16em] text-gold-bright uppercase transition-colors hover:bg-gold/10"
                             >
                               <Pencil size={11} strokeWidth={2} aria-hidden="true" />
                               Edit

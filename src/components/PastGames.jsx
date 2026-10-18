@@ -49,7 +49,7 @@ function GameCard({ game }) {
   const panelId = `past-${game.id}`;
 
   return (
-    <li className={`border transition-colors ${open ? 'border-gold/40 bg-char/80' : 'border-ivory/10 bg-char/50'}`}>
+    <li className={`card ${open ? 'card-active' : 'card-interactive'}`}>
       <button
         type="button"
         aria-expanded={open}
@@ -75,7 +75,7 @@ function GameCard({ game }) {
             {top ? (
               <>
                 <Crown size={15} strokeWidth={1.7} className="shrink-0 text-gold" aria-hidden="true" />
-                <span className="gold-text truncate font-display text-lg leading-tight font-semibold italic">
+                <span className="gold-text line-clamp-2 pr-1 font-display text-lg leading-tight font-semibold break-words italic sm:line-clamp-1">
                   {game.champions.map((c) => c.name).join(' & ')}
                 </span>
                 <span className="shrink-0 font-caps text-[0.58rem] tracking-[0.18em] text-ash uppercase">
@@ -169,7 +169,7 @@ export default function PastGames({ archive }) {
   );
 
   return (
-    <section aria-labelledby="past-games-title" className="mx-auto max-w-3xl">
+    <section aria-labelledby="past-games-title">
       <SectionTitle
         id="past-games-title"
         eyebrow="The Archive"

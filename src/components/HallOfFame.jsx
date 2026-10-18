@@ -13,7 +13,7 @@ export default function HallOfFame({ archive, players, rounds }) {
   const gamesCount = archive.length + (rounds.length ? 1 : 0);
 
   return (
-    <section aria-labelledby="hof-title" className="mx-auto max-w-3xl">
+    <section aria-labelledby="hof-title">
       <SectionTitle
         id="hof-title"
         eyebrow="All-time"
@@ -45,7 +45,7 @@ export default function HallOfFame({ archive, players, rounds }) {
         {rows.map((p, i) => {
           const tier = TIERS[i] && (p.crowns > 0 || p.points > 0) ? TIERS[i] : null;
           return (
-            <li key={p.id} className={`border px-4 py-3.5 sm:px-5 ${i === 0 ? 'border-gold/40 bg-gold/[0.05]' : 'border-ivory/8 bg-char/50'}`}>
+            <li key={p.id} className={`card px-4 py-3.5 sm:px-5 ${i === 0 ? 'card-active' : ''}`}>
               <div className="flex items-center gap-3">
                 <span className={`w-6 text-center font-display text-xl font-semibold ${RANK_TEXT[tier] ?? 'text-ivory/40'}`}>{i + 1}</span>
                 <span className="hidden min-[360px]:block">
