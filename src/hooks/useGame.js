@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useState } from 'react';
-import { MAX_PLAYERS, MIN_PLAYERS, nameKey } from '../lib/game.js';
+import { MAX_PLAYERS, MIN_PLAYERS, editTimeLeft, nameKey } from '../lib/game.js';
 import { STORAGE_KEY, emptyGame, loadGame, sanitize, saveGame } from '../lib/storage.js';
 
 function reducer(state, action) {
@@ -22,6 +22,18 @@ function reducer(state, action) {
       const seated = ids.every((id) => state.players.some((p) => p.id === id));
       if (!seated || new Set(ids).size !== ids.length || round.placings[0]?.place !== 1) return state;
       return { ...state, rounds: [...state.rounds, round], startedAt: state.startedAt ?? round.at };
+    }
+    case 'EDIT_ROUND': {
+      // Corrections are only allowed inside the edit window after a round is declared.
+      const index = state.rounds.findIndex((r) => r.id === action.roundId);
+      const round = state.rounds[index];
+      if (!round || editTimeLeft(round, action.at) <= 0) return state;
+      const ids = action.placings.map((p) => p.playerId);
+      const seated = ids.every((id) => state.players.some((p) => p.id === id));
+      if (!seated || new Set(ids).size !== ids.length || action.placings[0]?.place !== 1) return state;
+      const rounds = [...state.rounds];
+      rounds[index] = { ...round, placings: action.placings, editedAt: action.at };
+      return { ...state, rounds };
     }
     case 'UNDO_ROUND': {
       const last = state.rounds[state.rounds.length - 1];

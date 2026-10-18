@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Modal from './Modal.jsx';
 import { Avatar } from './Ornaments.jsx';
-import { PLACE_POINTS, tierFor } from '../lib/game.js';
+import { PLACE_POINTS, formatCountdown, tierFor } from '../lib/game.js';
 
 const PLACE_LABEL = { 1: '1st', 2: '2nd' };
 
@@ -9,8 +9,11 @@ const PLACE_LABEL = { 1: '1st', 2: '2nd' };
  * Two taps: the winner (+2), then the runner-up (+1). Tapping a picked card
  * clears it. With only two players the runner-up is filled in automatically.
  * Players are listed in seat order so their positions never shuffle.
+ *
+ * With `editing` ({ first, second, timeLeft }) it corrects an existing round
+ * instead, starting from that round's picks; saving is blocked once time runs out.
  */
-export default function RecordWinnerModal({ open, onClose, players, standings, roundNumber, onDeclare }) {
+export default function RecordWinnerModal({ open, onClose, players, standings, roundNumber, onDeclare, editing }) {
   const [first, setFirst] = useState(null);
   const [second, setSecond] = useState(null);
   const declareRef = useRef(null);
@@ -18,11 +21,16 @@ export default function RecordWinnerModal({ open, onClose, players, standings, r
   const ready = Boolean(first && second);
   const nameOf = (id) => players.find((p) => p.id === id)?.name;
 
+  const locked = Boolean(editing && editing.timeLeft <= 0);
+  const seatedId = (id) => (players.some((p) => p.id === id) ? id : null);
+
   useEffect(() => {
     if (open) {
-      setFirst(null);
-      setSecond(null);
+      setFirst(editing ? seatedId(editing.first) : null);
+      setSecond(editing ? seatedId(editing.second) : null);
     }
+    // Only reset when the sheet opens, not on every countdown tick.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const pick = (id) => {
@@ -47,7 +55,9 @@ export default function RecordWinnerModal({ open, onClose, players, standings, r
     if (ready) declareRef.current?.focus();
   }, [ready]);
 
-  const prompt = !first
+  const prompt = locked
+    ? 'The 5-minute edit window has closed — this round is now locked.'
+    : !first
     ? `Tap the winner — first out of cards takes +${PLACE_POINTS[1]}.`
     : !second
       ? `Now tap the runner-up — second out takes +${PLACE_POINTS[2]}.`
@@ -58,8 +68,8 @@ export default function RecordWinnerModal({ open, onClose, players, standings, r
       open={open}
       onClose={onClose}
       size="lg"
-      eyebrow={`Round ${roundNumber}`}
-      title="WHO WON THIS ROUND?"
+      eyebrow={editing ? `Round ${roundNumber} · Locks in ${formatCountdown(editing.timeLeft)}` : `Round ${roundNumber}`}
+      title={editing ? 'CHANGE THE WINNERS' : 'WHO WON THIS ROUND?'}
       footer={
         <>
           <button type="button" className="btn btn-ghost hidden sm:inline-flex" onClick={onClose}>
@@ -69,16 +79,16 @@ export default function RecordWinnerModal({ open, onClose, players, standings, r
             ref={declareRef}
             type="button"
             className="btn btn-gold btn-lg flex-1 sm:flex-none"
-            disabled={!ready}
-            onClick={() => ready && onDeclare(first, second)}
+            disabled={!ready || locked}
+            onClick={() => ready && !locked && onDeclare(first, second)}
           >
             <span aria-hidden="true" className="font-display text-base leading-none">♠</span>
-            Declare Winner
+            {editing ? 'Save Changes' : 'Declare Winner'}
           </button>
         </>
       }
     >
-      <p aria-live="polite" className={`mb-3 text-sm sm:mb-4 ${ready ? 'text-gold-bright' : 'text-smoke'}`}>
+      <p aria-live="polite" className={`mb-3 text-sm sm:mb-4 ${locked ? 'text-[#f0a3b1]' : ready ? 'text-gold-bright' : 'text-smoke'}`}>
         {prompt}
       </p>
       <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 short:sm:grid-cols-4" role="group" aria-label={`Round ${roundNumber} placings`}>

@@ -10,13 +10,16 @@ import RecordWinnerModal from './components/RecordWinnerModal.jsx';
 import ChampionScreen from './components/ChampionScreen.jsx';
 import ConfirmationDialog from './components/ConfirmationDialog.jsx';
 import WinnerCelebration from './components/WinnerCelebration.jsx';
-import { EndGameAction, MobileDock, TableActions } from './components/TableActions.jsx';
+import { EndGameAction, GameOverNotice, MobileDock, TableActions } from './components/TableActions.jsx';
 import { ToastProvider, useToast } from './components/ToastNotifications.jsx';
 import { Divider, SuitRow } from './components/Ornaments.jsx';
 import { useGame } from './hooks/useGame.js';
+import { useNow } from './hooks/useNow.js';
 import {
   MIN_PLAYERS,
+  EDIT_WINDOW_MS,
   PLACE_POINTS,
+  editTimeLeft,
   cleanName,
   computeStandings,
   getChampions,
@@ -40,7 +43,8 @@ function BluffNight() {
   const gameRef = useRef(game);
   gameRef.current = game;
 
-  const [modal, setModal] = useState(null); // 'players' | 'record' | null
+  const [modal, setModal] = useState(null); // 'players' | 'record' | 'edit' | null
+  const [editingId, setEditingId] = useState(null);
   const [confirm, setConfirm] = useState(null);
   const [celebration, setCelebration] = useState(null);
   const [flash, setFlash] = useState(null);
@@ -50,6 +54,13 @@ function BluffNight() {
   const champions = useMemo(() => getChampions(standings), [standings]);
   const scoreById = useMemo(() => new Map(standings.map((p) => [p.id, p.score])), [standings]);
   const roundsPlayed = game.rounds.length;
+
+  // Rounds are chronological, so something is editable only while the latest
+  // round is inside the edit window. Tick every second just for that stretch.
+  const latestAt = game.rounds[roundsPlayed - 1]?.at ?? 0;
+  const now = useNow(Date.now() - latestAt < EDIT_WINDOW_MS || modal === 'edit');
+  const editingIndex = game.rounds.findIndex((r) => r.id === editingId);
+  const editingRound = game.rounds[editingIndex];
   const ended = game.endedAt != null;
   const phase = ended ? 'concluded' : roundsPlayed > 0 ? 'live' : game.players.length ? 'seating' : 'closed';
 
@@ -115,7 +126,7 @@ function BluffNight() {
   // ── Rounds ────────────────────────────────────────────────────────────
   const openRecord = () => {
     if (ended) {
-      setChampionOpen(true);
+      toast.error('This game has ended', { message: 'No more rounds can be added. Start a new game to keep playing.' });
       return;
     }
     if (game.players.length < MIN_PLAYERS) {
@@ -182,6 +193,37 @@ function BluffNight() {
     });
   };
 
+  const openEdit = (roundId) => {
+    setEditingId(roundId);
+    setModal('edit');
+  };
+
+  const handleEditSave = (firstId, secondId) => {
+    const round = game.rounds.find((r) => r.id === editingId);
+    const winner = standings.find((p) => p.id === firstId);
+    const runnerUp = standings.find((p) => p.id === secondId);
+    if (!round || !winner || !runnerUp || firstId === secondId) return;
+    const at = Date.now();
+    setModal(null);
+    if (editTimeLeft(round, at) <= 0) {
+      toast.error('Too late to edit', { message: 'Rounds lock 5 minutes after they are declared.' });
+      return;
+    }
+    dispatch({
+      type: 'EDIT_ROUND',
+      roundId: round.id,
+      at,
+      placings: [
+        { playerId: winner.id, name: winner.name, place: 1, points: PLACE_POINTS[1] },
+        { playerId: runnerUp.id, name: runnerUp.name, place: 2, points: PLACE_POINTS[2] },
+      ],
+    });
+    setFlash({ ids: [winner.id, runnerUp.id], key: `${round.id}-${at}` });
+    toast.success(`Round ${editingIndex + 1} updated`, {
+      message: `${winner.name} +${PLACE_POINTS[1]}, ${runnerUp.name} +${PLACE_POINTS[2]}. Scores recalculated.`,
+    });
+  };
+
   const closeCelebration = useCallback(() => setCelebration(null), []);
 
   // ── Game lifecycle ────────────────────────────────────────────────────
@@ -197,7 +239,13 @@ function BluffNight() {
       title: 'End the game?',
       message: `After ${roundsPlayed} ${roundsPlayed === 1 ? 'round' : 'rounds'}, ${
         champions.length > 1 ? `the crown is shared by ${leader}` : `the crown goes to ${leader}`
-      }. You can resume afterwards if you change your mind.`,
+      }.`,
+      warningTitle: 'Once the game ends',
+      warnings: [
+        'The scores become final and the champion is crowned.',
+        'No more rounds can be added to this game.',
+        'To keep playing, start a new game. This one is saved to Past Games.',
+      ],
       confirmLabel: 'Crown the Champion',
       cancelLabel: 'Keep Playing',
       onConfirm: () => {
@@ -255,7 +303,6 @@ function BluffNight() {
   let footnote = null;
   if (game.players.length === 1) footnote = 'Seat one more player to deal the first round.';
   else if (phase === 'seating') footnote = 'Everyone is seated. Record the first round winner when the hand is done.';
-  else if (phase === 'concluded') footnote = 'This game has concluded. Resume it, or start a new game with the same table.';
 
   return (
     <div className="relative min-h-dvh">
@@ -280,14 +327,20 @@ function BluffNight() {
               flash={flash}
               onAddPlayers={() => setModal('players')}
               footnote={footnote}
-              closingAction={phase === 'live' ? <EndGameAction onEnd={handleEndGame} /> : null}
+              closingAction={
+                phase === 'live' ? (
+                  <EndGameAction onEnd={handleEndGame} />
+                ) : phase === 'concluded' ? (
+                  <GameOverNotice onNewGame={handleNewGame} onResume={handleResume} />
+                ) : null
+              }
               toolbar={game.players.length > 0 ? <TableActions {...actionProps} /> : null}
             />
           </div>
 
           {game.players.length > 0 && (
             <div className="mt-16 sm:mt-24">
-              <RoundHistory rounds={game.rounds} players={game.players} />
+              <RoundHistory rounds={game.rounds} players={game.players} now={now} onEdit={openEdit} />
             </div>
           )}
 
@@ -324,6 +377,21 @@ function BluffNight() {
         standings={standings}
         roundNumber={roundsPlayed + 1}
         onDeclare={handleDeclare}
+      />
+      <RecordWinnerModal
+        open={modal === 'edit' && Boolean(editingRound)}
+        onClose={() => setModal(null)}
+        players={game.players}
+        standings={standings}
+        roundNumber={editingIndex + 1}
+        onDeclare={handleEditSave}
+        editing={
+          editingRound && {
+            first: editingRound.placings.find((p) => p.place === 1)?.playerId,
+            second: editingRound.placings.find((p) => p.place === 2)?.playerId,
+            timeLeft: editTimeLeft(editingRound, now),
+          }
+        }
       />
       <ChampionScreen
         open={championOpen && ended}

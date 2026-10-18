@@ -4,6 +4,19 @@ export const MAX_NAME_LENGTH = 20;
 /** Points per finishing place: the first player out of cards takes 2, the next takes 1. */
 export const PLACE_POINTS = { 1: 2, 2: 1 };
 
+/** A round's winner and runner-up can be corrected for this long after it is declared. */
+export const EDIT_WINDOW_MS = 5 * 60 * 1000;
+
+/** Milliseconds left to edit a round (0 once locked). */
+export function editTimeLeft(round, now) {
+  return Math.max(0, round.at + EDIT_WINDOW_MS - now);
+}
+
+export function formatCountdown(ms) {
+  const total = Math.ceil(ms / 1000);
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, '0')}`;
+}
+
 export function uid() {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();

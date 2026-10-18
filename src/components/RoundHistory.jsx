@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Pencil } from 'lucide-react';
 import { Avatar } from './Ornaments.jsx';
-import { formatTimestamp, pad2, placingFor } from '../lib/game.js';
+import { editTimeLeft, formatCountdown, formatTimestamp, pad2, placingFor } from '../lib/game.js';
 
 const PREVIEW = 6;
 
-export default function RoundHistory({ rounds, players }) {
+/** `now` ticks while any round is still editable; `onEdit` is omitted when editing isn't allowed. */
+export default function RoundHistory({ rounds, players, now, onEdit }) {
   const [expanded, setExpanded] = useState(false);
   const seated = new Map(players.map((p) => [p.id, p.name]));
   const describe = (placing) =>
@@ -64,6 +66,26 @@ export default function RoundHistory({ rounds, players }) {
                           <span className="shrink-0 font-display text-sm font-semibold text-silver">+{r.second.points}</span>
                         </p>
                       )}
+                      {(() => {
+                        const left = onEdit ? editTimeLeft(r, now) : 0;
+                        if (left > 0) {
+                          return (
+                            <button
+                              type="button"
+                              onClick={() => onEdit(r.id)}
+                              aria-label={`Edit round ${r.number}, ${formatCountdown(left)} left`}
+                              className="mt-1.5 inline-flex min-h-8 items-center gap-1.5 border border-gold/40 px-2.5 font-caps text-[0.58rem] font-semibold tracking-[0.16em] text-gold-bright uppercase transition-colors hover:bg-gold/10"
+                            >
+                              <Pencil size={11} strokeWidth={2} aria-hidden="true" />
+                              Edit
+                              <span className="font-sans tracking-normal text-ivory/60 lining-nums tabular-nums">{formatCountdown(left)}</span>
+                            </button>
+                          );
+                        }
+                        return r.editedAt ? (
+                          <p className="mt-1 font-caps text-[0.52rem] tracking-[0.18em] text-ash uppercase">Edited</p>
+                        ) : null;
+                      })()}
                     </div>
                     <time
                       dateTime={new Date(r.at).toISOString()}

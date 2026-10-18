@@ -64,7 +64,9 @@ function sanitizeRounds(list, players, report) {
       report();
       continue;
     }
-    rounds.push({ id: typeof r.id === 'string' && r.id ? r.id : uid(), placings, at: finite(r.at) ?? Date.now() });
+    const round = { id: typeof r.id === 'string' && r.id ? r.id : uid(), placings, at: finite(r.at) ?? Date.now() };
+    if (finite(r.editedAt)) round.editedAt = r.editedAt;
+    rounds.push(round);
   }
   return rounds;
 }

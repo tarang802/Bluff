@@ -12,6 +12,7 @@ Scores are saved in `localStorage`, so a game survives page refreshes on the sam
 - **Scoring:** each round, the **winner gets 2 points** and the **runner-up gets 1 point**. Tap the winner first, then the runner-up, then press *Declare Winner*. With only two players, the runner-up is filled in automatically. The leaderboard re-ranks and a short celebration plays.
 - **Ranking:** by score; when scores tie, more round wins comes first.
 - **Undo:** remove the most recent round from the toolbar, the mobile dock, or the toast that appears after each round.
+- **Fix a round (5-minute window):** every round shows an **Edit** button with a countdown for 5 minutes after it is declared. Change the winner and runner-up and scores recalculate instantly. After 5 minutes the round locks for good (marked *Edited* if it was changed).
 - **Leaderboard:** players are ranked by score. Tied players share a rank (1, 1, 3), and gold, silver and bronze accents go to the top three. Phones get compact cards and larger screens get a table.
 - **The Night's History:** a log of every round with the winner, runner-up, points, and the date and time it was recorded, newest first.
 - **Champion screen:** shows the final standings. Tied leaders become joint champions. You can resume an ended game.

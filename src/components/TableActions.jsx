@@ -1,4 +1,4 @@
-import { Crown, Play, Trophy, Undo2, UserPlus } from 'lucide-react';
+import { Crown, Lock, Play, RotateCcw, Trophy, Undo2, UserPlus } from 'lucide-react';
 import { MIN_PLAYERS } from '../lib/game.js';
 
 const Spade = () => <span aria-hidden="true" className="font-display text-base leading-none">♠</span>;
@@ -61,15 +61,46 @@ export function EndGameAction({ onEnd }) {
   );
 }
 
+/** Shown under the final standings once a game has ended. */
+export function GameOverNotice({ onNewGame, onResume }) {
+  return (
+    <div className="w-full max-w-md border border-wine-bright/40 bg-wine/15 px-4 py-4 text-left sm:px-5">
+      <p className="flex items-center gap-2 font-caps text-[0.66rem] font-semibold tracking-[0.22em] text-[#f0b7c1] uppercase">
+        <Lock size={14} strokeWidth={2} aria-hidden="true" />
+        This game is over
+      </p>
+      <p className="mt-2 text-sm leading-relaxed text-ivory/85">
+        The scores are final and no more rounds can be added. To play more rounds, start a new game. This one will be saved
+        to Past Games.
+      </p>
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+        <button type="button" className="btn btn-gold flex-1" onClick={onNewGame}>
+          <RotateCcw size={14} strokeWidth={1.8} aria-hidden="true" />
+          Start New Game
+        </button>
+        <button type="button" className="btn btn-ghost btn-sm sm:btn-lg" onClick={onResume}>
+          Ended by mistake? Resume
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /** Thumb-reach dock for phones — the record button is never more than a tap away. */
-export function MobileDock({ phase, playerCount, roundsPlayed, onAddPlayers, onRecord, onUndo, onViewChampion }) {
+export function MobileDock({ phase, playerCount, roundsPlayed, onAddPlayers, onRecord, onUndo, onViewChampion, onNewGame }) {
   let main;
   if (phase === 'concluded') {
+    // A finished game takes no more rounds, so the next move is a new game.
     main = (
-      <button type="button" className="btn btn-gold btn-lg min-w-0 flex-1" onClick={onViewChampion}>
-        <Trophy size={16} strokeWidth={1.8} aria-hidden="true" />
-        View Champion
-      </button>
+      <>
+        <button type="button" className="btn btn-gold btn-lg min-w-0 flex-1 !px-3" onClick={onNewGame}>
+          <RotateCcw size={15} strokeWidth={1.8} aria-hidden="true" />
+          Start New Game
+        </button>
+        <button type="button" className="btn btn-ghost btn-lg shrink-0 !px-4" onClick={onViewChampion} aria-label="View champion">
+          <Trophy size={17} strokeWidth={1.8} aria-hidden="true" />
+        </button>
+      </>
     );
   } else if (playerCount < MIN_PLAYERS) {
     main = (
