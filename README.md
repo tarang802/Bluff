@@ -1,0 +1,76 @@
+# Bluff Night ♠
+
+**The House of Bluff** — a private-casino leaderboard for a group of friends playing Bluff.
+Seat players, record who won each round, and crown the champion at the end of the night.
+
+Everything runs in the browser. There is no backend, no login, no database and no environment variables.
+Scores are saved in `localStorage`, so a game survives page refreshes on the same device and browser.
+
+## Features
+
+- **Players:** 2–15 per table. Blank and duplicate names (case-insensitive) are rejected. Players can be added or removed at any time. Removing someone mid-game asks for confirmation; their points leave the leaderboard, but their rounds stay in the history.
+- **Scoring:** each round, the **winner gets 2 points** and the **runner-up gets 1 point**. Tap the winner first, then the runner-up, then press *Declare Winner*. With only two players, the runner-up is filled in automatically. The leaderboard re-ranks and a short celebration plays.
+- **Ranking:** by score; when scores tie, more round wins comes first.
+- **Undo:** remove the most recent round from the toolbar, the mobile dock, or the toast that appears after each round.
+- **Leaderboard:** players are ranked by score. Tied players share a rank (1, 1, 3), and gold, silver and bronze accents go to the top three. Phones get compact cards and larger screens get a table.
+- **The Night's History:** a log of every round with the winner, points and time, newest first.
+- **Champion screen:** shows the final standings. Tied leaders become joint champions. You can resume an ended game.
+- **New Game** keeps the players and clears scores and history. **Reset Everything** (in the footer) removes the players too. Both ask for confirmation.
+- **Resilient storage:** a broken save is backed up and replaced with a fresh table, and a partly damaged save is repaired. Other tabs stay in sync.
+- **Accessibility:** keyboard navigation, focus trapping in dialogs, Escape to close, and screen-reader text for the standings. Animations are reduced when `prefers-reduced-motion` is set.
+
+## Tech
+
+React 18 · Vite 6 · Tailwind CSS 4 · Framer Motion · Lucide icons
+
+```
+src/
+  App.jsx                    app state wiring, handlers, layout
+  hooks/useGame.js           reducer + localStorage persistence
+  hooks/useFocusTrap.js      dialog focus trap / scroll lock
+  lib/game.js                rules: validation, standings, ties
+  lib/storage.js             load / sanitize / save
+  components/                Header, HeroSection, Leaderboard, TableActions,
+                             AddPlayersModal, RecordWinnerModal, RoundHistory,
+                             ChampionScreen, WinnerCelebration,
+                             ConfirmationDialog, ToastNotifications, Modal
+```
+
+Scores are not stored directly. Each round records its placings (1st and 2nd), and scores are calculated from that log, so scores and history can never disagree, and undo just removes the last round.
+
+## Local development
+
+Requires Node 18+.
+
+```bash
+npm install
+npm run dev        # http://localhost:5173
+```
+
+Production build and local preview:
+
+```bash
+npm run build      # outputs to dist/
+npm run preview
+```
+
+## Deploy to Vercel
+
+**Option A — dashboard:** push this folder to a GitHub repo and import it at [vercel.com/new](https://vercel.com/new).
+Vercel detects Vite automatically. The build command is `npm run build` and the output directory is `dist`.
+
+**Option B — CLI:**
+
+```bash
+npm i -g vercel
+vercel           # preview deployment
+vercel --prod    # production
+```
+
+`vercel.json` sets the framework and adds a fallback rewrite to `index.html`.
+No environment variables or API keys are needed.
+
+## Note
+
+Scores are stored per device. If two phones each keep score, they will not see each other's results.
+Pick one device as the scorekeeper for the night.
