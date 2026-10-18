@@ -2,10 +2,10 @@ import { RotateCcw } from 'lucide-react';
 import { BluffTicker, Logo } from './Ornaments.jsx';
 
 const PHASES = {
-  closed: { short: 'Table closed', long: 'Table closed', dot: 'bg-ash', ring: 'border-ivory/10 text-smoke' },
+  closed: { short: 'Closed', long: 'Table closed', dot: 'bg-ash', ring: 'border-ivory/10 text-smoke' },
   seating: { short: 'Seating', long: 'Seating players', dot: 'bg-gold', ring: 'border-gold/25 text-gold-bright' },
   live: { short: 'Live', long: 'Game in progress', dot: 'bg-[#6fcf8f]', ring: 'border-[#6fcf8f]/30 text-[#bfe8cb]', pulse: true },
-  concluded: { short: 'Concluded', long: 'Game concluded', dot: 'bg-wine-bright', ring: 'border-wine-bright/40 text-[#f0b7c1]' },
+  concluded: { short: 'Ended', long: 'Game concluded', dot: 'bg-wine-bright', ring: 'border-wine-bright/40 text-[#f0b7c1]' },
 };
 
 export function SessionIndicator({ phase, roundsPlayed }) {

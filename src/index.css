@@ -47,18 +47,43 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* A card-back diamond lattice behind everything, fading towards the edges. */
+  /*
+   * A card-back diamond lattice behind everything, drawn in gold with a
+   * faint shine: the lattice is the mask, and the gold "light" underneath
+   * is brighter where it catches (top-left, lower-right) and dims towards
+   * the edges.
+   */
   body::before {
     content: "";
     position: fixed;
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background-image:
-      repeating-linear-gradient(45deg, rgb(201 162 74 / 0.035) 0 1px, transparent 1px 26px),
-      repeating-linear-gradient(-45deg, rgb(201 162 74 / 0.035) 0 1px, transparent 1px 26px);
-    mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 20%, transparent 85%);
-    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 20%, transparent 85%);
+    background:
+      radial-gradient(ellipse 55% 40% at 22% 18%, rgb(246 214 140 / 0.2), transparent 70%),
+      radial-gradient(ellipse 50% 38% at 82% 72%, rgb(246 214 140 / 0.13), transparent 70%),
+      radial-gradient(ellipse 90% 80% at 50% 45%, rgb(201 162 74 / 0.085), rgb(201 162 74 / 0.025) 100%);
+    background-size:
+      140% 140%,
+      140% 140%,
+      100% 100%;
+    background-position:
+      0% 0%,
+      100% 100%,
+      center;
+    mask-image:
+      repeating-linear-gradient(45deg, #000 0 1px, transparent 1px 26px),
+      repeating-linear-gradient(-45deg, #000 0 1px, transparent 1px 26px);
+    -webkit-mask-image:
+      repeating-linear-gradient(45deg, #000 0 1px, transparent 1px 26px),
+      repeating-linear-gradient(-45deg, #000 0 1px, transparent 1px 26px);
+  }
+
+  /* On larger screens the highlights drift very slowly, like light across a card table. */
+  @media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+    body::before {
+      animation: lattice-shine 24s ease-in-out infinite alternate;
+    }
   }
 
   #root {
@@ -364,6 +389,20 @@
   }
 }
 
+@keyframes lattice-shine {
+  from {
+    background-position:
+      0% 0%,
+      100% 100%,
+      center;
+  }
+  to {
+    background-position:
+      100% 60%,
+      0% 30%,
+      center;
+  }
+}
 @keyframes foil-sweep {
   0%,
   100% {
