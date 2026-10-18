@@ -17,7 +17,7 @@ export function Avatar({ name, tier = null, size = 'md', className = '' }) {
   return (
     <span
       aria-hidden="true"
-      className={`relative inline-grid shrink-0 place-items-center rounded-full border bg-[radial-gradient(circle_at_30%_25%,#33283d,#150f1b_70%)] font-caps font-semibold tracking-[0.08em] ${
+      className={`relative inline-grid shrink-0 place-items-center rounded-full border bg-[radial-gradient(circle_at_30%_25%,#26231d,#0d0d10_70%)] font-caps font-semibold tracking-[0.08em] ${
         TIER_RING[tier] ?? 'border-gold/25 text-ivory/85'
       } ${SIZES[size]} ${className}`}
     >

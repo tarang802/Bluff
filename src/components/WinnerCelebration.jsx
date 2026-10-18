@@ -31,7 +31,7 @@ export default function WinnerCelebration({ data, onDone }) {
       {data && (
         <motion.div
           key={data.key}
-          className="fixed inset-0 z-[55] grid cursor-pointer place-items-center bg-[#0d0a12]/75 px-6 backdrop-blur-[2px]"
+          className="fixed inset-0 z-[55] grid cursor-pointer place-items-center bg-black/75 px-6 backdrop-blur-[2px]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.35 } }}

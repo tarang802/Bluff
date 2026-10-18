@@ -27,7 +27,7 @@ function CardBack() {
 function PlayingCard({ rank, suit, red }) {
   const tone = red ? 'text-wine-bright' : 'text-gold-bright';
   return (
-    <div className="relative h-[232px] w-[164px] rounded-[10px] border border-gold/45 bg-[linear-gradient(160deg,#2c2236,#17111e)] p-2 shadow-[0_30px_60px_-20px_rgb(0_0_0/0.9)]">
+    <div className="relative h-[232px] w-[164px] rounded-[10px] border border-gold/45 bg-[linear-gradient(160deg,#1c1b1f,#0e0e11)] p-2 shadow-[0_30px_60px_-20px_rgb(0_0_0/0.9)]">
       <div className="relative h-full w-full rounded-[6px] border border-gold/15">
         <div className={`absolute top-2 left-2.5 text-center font-display leading-none ${tone}`}>
           <div className="text-2xl font-semibold">{rank}</div>
