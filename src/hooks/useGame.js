@@ -10,6 +10,12 @@ function reducer(state, action) {
       if (state.players.some((p) => nameKey(p.name) === nameKey(player.name))) return state;
       return { ...state, players: [...state.players, player] };
     }
+    case 'RENAME_PLAYER': {
+      // Scores and history follow the player id, so only the label changes.
+      const { id, name } = action;
+      if (state.players.some((p) => p.id !== id && nameKey(p.name) === nameKey(name))) return state;
+      return { ...state, players: state.players.map((p) => (p.id === id ? { ...p, name } : p)) };
+    }
     case 'REMOVE_PLAYER': {
       // Their past rounds stay in the history; standings drop their points.
       if (state.endedAt) return state;
@@ -34,12 +40,6 @@ function reducer(state, action) {
       const rounds = [...state.rounds];
       rounds[index] = { ...round, placings: action.placings, editedAt: action.at };
       return { ...state, rounds };
-    }
-    case 'UNDO_ROUND': {
-      const last = state.rounds[state.rounds.length - 1];
-      if (state.endedAt || !last || (action.roundId && action.roundId !== last.id)) return state;
-      const rounds = state.rounds.slice(0, -1);
-      return { ...state, rounds, startedAt: rounds.length ? state.startedAt : null };
     }
     case 'END_GAME':
       if (!state.rounds.length || state.endedAt) return state;

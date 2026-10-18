@@ -1,19 +1,12 @@
 import { useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, Crown } from 'lucide-react';
-import { Avatar } from './Ornaments.jsx';
+import { Avatar, SectionTitle } from './Ornaments.jsx';
+import ShareButtons from './ShareButtons.jsx';
+import { standingsText } from '../lib/share.js';
 import { computeStandings, formatTimestamp, getChampions, pad2, placingFor, tierFor } from '../lib/game.js';
 
 const RANK_TEXT = { gold: 'text-gold-bright', silver: 'text-silver', bronze: 'text-bronze' };
-
-/** Crowns per player name across every archived game (joint champions each get one). */
-function crownTally(games) {
-  const tally = new Map();
-  for (const g of games) {
-    for (const c of g.champions) tally.set(c.name, (tally.get(c.name) ?? 0) + 1);
-  }
-  return [...tally.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-}
 
 function GameRounds({ game }) {
   return (
@@ -86,7 +79,7 @@ function GameCard({ game }) {
                   {game.champions.map((c) => c.name).join(' & ')}
                 </span>
                 <span className="shrink-0 font-caps text-[0.58rem] tracking-[0.18em] text-ash uppercase">
-                  {top.score} pts{game.crowned ? '' : ' · led'}
+                  {top.score} pts{game.crowned ? '' : ' · unfinished'}
                 </span>
               </>
             ) : (
@@ -133,9 +126,22 @@ function GameCard({ game }) {
                   );
                 })}
               </ol>
+              <ShareButtons
+                className="mt-3"
+                size="btn-sm"
+                getText={() =>
+                  standingsText({
+                    standings: game.standings,
+                    champions: game.champions,
+                    roundsPlayed: game.rounds.length,
+                    final: true,
+                    at: game.endedAt,
+                  })
+                }
+              />
               <button
                 type="button"
-                className="btn btn-sm btn-ghost mt-3 w-full sm:w-auto"
+                className="btn btn-sm btn-ghost mt-2 w-full sm:w-auto"
                 aria-expanded={showRounds}
                 onClick={() => setShowRounds((v) => !v)}
               >
@@ -161,44 +167,16 @@ export default function PastGames({ archive }) {
         .reverse(),
     [archive],
   );
-  const tally = useMemo(() => crownTally(games), [games]);
 
   return (
     <section aria-labelledby="past-games-title" className="mx-auto max-w-3xl">
-      <div className="mb-5 flex items-end justify-between gap-4 border-b border-gold/15 pb-4">
-        <div>
-          <p className="eyebrow text-[0.58rem] text-smoke">The Archive</p>
-          <h2
-            id="past-games-title"
-            className="mt-1.5 font-caps text-[0.95rem] font-semibold tracking-[0.14em] whitespace-nowrap text-ivory sm:text-xl sm:tracking-[0.18em]"
-          >
-            PAST GAMES
-          </h2>
-        </div>
-        <p className="font-caps text-[0.6rem] tracking-[0.2em] whitespace-nowrap text-ash uppercase">
-          {games.length} {games.length === 1 ? 'game' : 'games'}
-        </p>
-      </div>
-
-      {tally.length > 0 && (
-        <div className="mb-5">
-          <p className="eyebrow mb-2.5 text-[0.55rem] text-smoke">Crowns won</p>
-          <ul className="flex flex-wrap gap-2">
-            {tally.map(([name, count], i) => (
-              <li
-                key={name}
-                className={`inline-flex items-center gap-1.5 border px-3 py-1.5 text-sm ${
-                  i === 0 ? 'border-gold/50 bg-gold/10 text-gold-bright' : 'border-ivory/10 text-ivory/80'
-                }`}
-              >
-                <Crown size={13} strokeWidth={1.8} aria-hidden="true" className={i === 0 ? 'text-gold' : 'text-smoke'} />
-                <span className="max-w-[10rem] truncate">{name}</span>
-                <span className="font-display font-semibold">×{count}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <SectionTitle
+        id="past-games-title"
+        eyebrow="The Archive"
+        title="PAST GAMES"
+        suit="♣"
+        meta={`${games.length} ${games.length === 1 ? 'game' : 'games'}`}
+      />
 
       <ol className="flex flex-col gap-2.5">
         {games.map((g) => (

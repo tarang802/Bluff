@@ -5,6 +5,7 @@ import { ArrowLeft, Crown, RotateCcw } from 'lucide-react';
 import { useFocusTrap } from '../hooks/useFocusTrap.js';
 import { Avatar, Divider, SuitRow } from './Ornaments.jsx';
 import { tierFor } from '../lib/game.js';
+import ShareButtons from './ShareButtons.jsx';
 
 const SUITS = ['♠', '♥', '♦', '♣'];
 
@@ -53,7 +54,7 @@ function Shower() {
   );
 }
 
-export default function ChampionScreen({ open, champions, standings, roundsPlayed, onBack, onNewGame }) {
+export default function ChampionScreen({ open, champions, standings, roundsPlayed, onBack, onNewGame, shareText }) {
   const ref = useRef(null);
   const reduce = useReducedMotion();
   useFocusTrap(open, ref, { onEscape: onBack });
@@ -138,7 +139,7 @@ export default function ChampionScreen({ open, champions, standings, roundsPlaye
                 {joint && <p className="eyebrow mb-4 text-wine-bright">Joint champions</p>}
                 <div className="flex flex-col items-center gap-2">
                   {champions.map((c) => (
-                    <p key={c.id} className="gold-text max-w-full px-2 pb-2 font-display text-[2.6rem] leading-[1.05] font-semibold break-words italic min-[360px]:text-5xl sm:text-7xl">
+                    <p key={c.id} className="foil max-w-full px-2 pb-2 font-display text-[2.6rem] leading-[1.05] font-semibold break-words italic min-[360px]:text-5xl sm:text-7xl">
                       {c.name}
                     </p>
                   ))}
@@ -199,7 +200,8 @@ export default function ChampionScreen({ open, champions, standings, roundsPlaye
               </ol>
             </motion.section>
 
-            <div className="mt-10 flex w-full max-w-xl flex-col gap-3 sm:flex-row">
+            <ShareButtons getText={shareText} label="Share the result" className="mt-8 w-full max-w-xl" size="btn-lg" />
+            <div className="mt-3 flex w-full max-w-xl flex-col gap-3 sm:flex-row">
               <button type="button" className="btn btn-outline btn-lg flex-1" onClick={onBack}>
                 <ArrowLeft size={15} strokeWidth={1.8} aria-hidden="true" />
                 Back to Leaderboard

@@ -5,6 +5,7 @@ import HeroSection from './components/HeroSection.jsx';
 import Leaderboard from './components/Leaderboard.jsx';
 import RoundHistory from './components/RoundHistory.jsx';
 import PastGames from './components/PastGames.jsx';
+import HallOfFame from './components/HallOfFame.jsx';
 import AddPlayersModal from './components/AddPlayersModal.jsx';
 import RecordWinnerModal from './components/RecordWinnerModal.jsx';
 import ChampionScreen from './components/ChampionScreen.jsx';
@@ -12,6 +13,10 @@ import ConfirmationDialog from './components/ConfirmationDialog.jsx';
 import WinnerCelebration from './components/WinnerCelebration.jsx';
 import { EndGameAction, GameOverNotice, MobileDock, TableActions } from './components/TableActions.jsx';
 import { ToastProvider, useToast } from './components/ToastNotifications.jsx';
+import ShareButtons from './components/ShareButtons.jsx';
+import BackupPanel from './components/BackupPanel.jsx';
+import { downloadBackup, mergeBackup, parseBackup } from './lib/backup.js';
+import { standingsText } from './lib/share.js';
 import { Divider, SuitRow } from './components/Ornaments.jsx';
 import { useGame } from './hooks/useGame.js';
 import { useNow } from './hooks/useNow.js';
@@ -25,6 +30,7 @@ import {
   getChampions,
   uid,
   validateNewPlayer,
+  validatePlayerName,
 } from './lib/game.js';
 
 export default function App() {
@@ -40,14 +46,15 @@ export default function App() {
 function BluffNight() {
   const toast = useToast();
   const { game, dispatch, bootIssue, saveFailed } = useGame();
-  const gameRef = useRef(game);
-  gameRef.current = game;
 
   const [modal, setModal] = useState(null); // 'players' | 'record' | 'edit' | null
   const [editingId, setEditingId] = useState(null);
   const [confirm, setConfirm] = useState(null);
   const [celebration, setCelebration] = useState(null);
   const [flash, setFlash] = useState(null);
+  // Latest state for confirmations that run after other changes (e.g. a restore).
+  const gameRef = useRef(game);
+  gameRef.current = game;
   const [championOpen, setChampionOpen] = useState(() => game.endedAt != null);
 
   const standings = useMemo(() => computeStandings(game.players, game.rounds), [game.players, game.rounds]);
@@ -100,6 +107,14 @@ function BluffNight() {
     return { ok: true, name };
   };
 
+  const handleRenamePlayer = (id, raw) => {
+    const error = validatePlayerName(raw, game.players, id);
+    if (error) return { ok: false, error };
+    const name = cleanName(raw);
+    dispatch({ type: 'RENAME_PLAYER', id, name });
+    return { ok: true, name };
+  };
+
   const handleRemovePlayer = (id) => {
     const player = standings.find((p) => p.id === id);
     if (!player || ended) return { removed: false };
@@ -137,30 +152,10 @@ function BluffNight() {
     setModal('record');
   };
 
-  const handleUndo = useCallback(
-    (roundId) => {
-      const g = gameRef.current;
-      const last = g.rounds[g.rounds.length - 1];
-      if (g.endedAt) {
-        toast.info('The game has ended', { message: 'Resume the game first if a round needs correcting.' });
-        return;
-      }
-      if (!last) {
-        toast.info('Nothing to undo', { message: 'No rounds have been recorded yet.' });
-        return;
-      }
-      if (typeof roundId === 'string' && roundId !== last.id) {
-        toast.info('That round is no longer the latest', { message: 'Use the Undo button to remove the most recent round.' });
-        return;
-      }
-      const names = last.placings.map((pl) => g.players.find((p) => p.id === pl.playerId)?.name ?? pl.name);
-      dispatch({ type: 'UNDO_ROUND', roundId: last.id });
-      setCelebration(null);
-      setFlash(null);
-      toast.info(`Round ${g.rounds.length} undone`, { message: `Points taken back from ${names.join(' and ')}.` });
-    },
-    [dispatch, toast],
-  );
+  const openEdit = (roundId) => {
+    setEditingId(roundId);
+    setModal('edit');
+  };
 
   const handleDeclare = (firstId, secondId) => {
     const winner = standings.find((p) => p.id === firstId);
@@ -188,14 +183,9 @@ function BluffNight() {
       runnerUpPoints: PLACE_POINTS[2],
     });
     toast.success(`Round ${round}: ${winner.name} +${PLACE_POINTS[1]}, ${runnerUp.name} +${PLACE_POINTS[2]}`, {
-      message: 'Wrong players? Undo it right here.',
-      action: { label: 'Undo', onClick: () => handleUndo(record.id) },
+      message: 'Wrong players? You can fix it for 5 minutes.',
+      action: { label: 'Edit', onClick: () => openEdit(record.id) },
     });
-  };
-
-  const openEdit = (roundId) => {
-    setEditingId(roundId);
-    setModal('edit');
   };
 
   const handleEditSave = (firstId, secondId) => {
@@ -282,11 +272,57 @@ function BluffNight() {
     });
   };
 
+  // ── Backup ────────────────────────────────────────────────────────────
+  const handleBackup = () => {
+    if (!game.players.length && !roundsPlayed && !game.archive.length) {
+      toast.info('Nothing to back up yet', { message: 'Play a game first, then save a backup.' });
+      return;
+    }
+    downloadBackup(game);
+    toast.success('Backup saved', { message: 'Keep the file somewhere safe, like your Google Drive or Files app.' });
+  };
+
+  const handleRestoreFile = async (file) => {
+    let incoming;
+    try {
+      incoming = parseBackup(await file.text());
+    } catch (err) {
+      toast.error('Could not restore', { message: err.message });
+      return;
+    }
+    const pastCount = incoming.archive.length;
+    setConfirm({
+      eyebrow: 'The vault',
+      title: 'Restore this backup?',
+      message: `The file has ${pastCount} past ${pastCount === 1 ? 'game' : 'games'}${
+        incoming.rounds.length ? ` and a game in progress (${incoming.rounds.length} rounds)` : ''
+      }.`,
+      warningTitle: 'Nothing is deleted',
+      warnings: [
+        'Past games are merged with the ones on this phone, without duplicates.',
+        "If the backup has a game in progress, it becomes the current game and this phone's current game moves to Past Games.",
+      ],
+      confirmLabel: 'Restore & Merge',
+      onConfirm: () => {
+        const { game: merged, addedGames, replacedCurrent } = mergeBackup(gameRef.current, incoming);
+        dispatch({ type: 'HYDRATE', game: merged });
+        setChampionOpen(false);
+        setFlash(null);
+        toast.success('Backup restored', {
+          message: `${addedGames} past ${addedGames === 1 ? 'game' : 'games'} added${replacedCurrent ? ', game in progress restored' : ''}.`,
+        });
+      },
+    });
+  };
+
   const runConfirm = () => {
     const action = confirm?.onConfirm;
     setConfirm(null);
     action?.();
   };
+
+  const shareText = () =>
+    standingsText({ standings, champions, roundsPlayed, final: ended, at: game.endedAt ?? game.rounds[roundsPlayed - 1]?.at });
 
   const actionProps = {
     phase,
@@ -294,10 +330,10 @@ function BluffNight() {
     roundsPlayed,
     onAddPlayers: () => setModal('players'),
     onRecord: openRecord,
-    onUndo: () => handleUndo(),
     onResume: handleResume,
     onViewChampion: () => setChampionOpen(true),
     onNewGame: handleNewGame,
+    share: roundsPlayed > 0 ? <ShareButtons getText={shareText} label="Share" className="w-full sm:w-auto" size="md:btn-lg" /> : null,
   };
 
   let footnote = null;
@@ -344,18 +380,37 @@ function BluffNight() {
             </div>
           )}
 
+          {(game.archive.length > 0 || roundsPlayed > 0) && (
+            <div className="mt-16 sm:mt-24">
+              <HallOfFame archive={game.archive} players={game.players} rounds={game.rounds} />
+            </div>
+          )}
+
           {game.archive.length > 0 && (
             <div className="mt-16 sm:mt-24">
               <PastGames archive={game.archive} />
             </div>
           )}
+
+          <div className="mt-16 sm:mt-24">
+            <BackupPanel
+              onBackup={handleBackup}
+              onRestoreFile={handleRestoreFile}
+              onInstalled={() => toast.success('Bluff Night installed', { message: 'Open it from your home screen, even offline.' })}
+            />
+          </div>
         </div>
       </main>
 
       <footer className="border-t border-gold/10 pb-28 md:pb-0">
-        <div className="mx-auto flex max-w-6xl flex-col items-center px-4 py-10 text-center sm:px-6 lg:px-8">
-          <SuitRow className="text-xs" />
-          <p className="mt-2 text-xs text-ash">Bluff Night · Scores live only in this browser.</p>
+        <div className="mx-auto flex max-w-6xl flex-col items-center px-4 py-12 text-center sm:px-6 lg:px-8">
+          <Divider className="w-full max-w-xs" glyph="♠" />
+          <p className="mt-6 font-caps text-[0.62rem] font-semibold tracking-[0.24em] whitespace-nowrap text-gold/80 min-[360px]:tracking-[0.3em] sm:text-[0.7rem] sm:tracking-[0.42em]">
+            THE HOUSE ALWAYS REMEMBERS
+          </p>
+          <p className="mt-2 font-display text-base text-smoke italic">Bluff Night · The House of Bluff</p>
+          <SuitRow className="mt-5 text-xs" />
+          <p className="mt-4 text-[0.7rem] text-ash">Scores are kept on this device. Save a backup from the Vault to keep them safe.</p>
         </div>
       </footer>
 
@@ -369,6 +424,7 @@ function BluffNight() {
         scores={scoreById}
         onAdd={handleAddPlayer}
         onRemove={handleRemovePlayer}
+        onRename={handleRenamePlayer}
       />
       <RecordWinnerModal
         open={modal === 'record'}
@@ -398,6 +454,7 @@ function BluffNight() {
         champions={champions}
         standings={standings}
         roundsPlayed={roundsPlayed}
+        shareText={shareText}
         onBack={() => setChampionOpen(false)}
         onNewGame={handleNewGame}
       />

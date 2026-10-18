@@ -4,9 +4,11 @@
 @custom-variant short (@media (max-height: 30rem));
 
 @theme {
+  /* Page background: black. Surfaces (char/felt) keep their royal tint. */
   --color-ink: #09090b;
-  --color-char: #111114;
-  --color-felt: #17171b;
+  --color-char: #1f1827;
+  --color-felt: #271e31;
+  --color-royal: #5a3a86;
   --color-line: #2b2721;
   --color-gold: #c9a24a;
   --color-gold-bright: #e8cd7e;
@@ -36,14 +38,33 @@
   body {
     min-height: 100dvh;
     background:
-      radial-gradient(1100px 520px at 50% -12%, rgb(122 26 43 / 0.2), transparent 62%),
-      radial-gradient(800px 400px at 100% 40%, rgb(201 162 74 / 0.05), transparent 70%),
+      radial-gradient(1100px 560px at 50% -12%, rgb(122 26 43 / 0.26), transparent 62%),
+      radial-gradient(900px 500px at 100% 35%, rgb(201 162 74 / 0.05), transparent 70%),
       var(--color-ink);
     color: var(--color-ivory);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  /* A card-back diamond lattice behind everything, fading towards the edges. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      repeating-linear-gradient(45deg, rgb(201 162 74 / 0.035) 0 1px, transparent 1px 26px),
+      repeating-linear-gradient(-45deg, rgb(201 162 74 / 0.035) 0 1px, transparent 1px 26px);
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 20%, transparent 85%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 20%, transparent 85%);
+  }
+
+  #root {
+    position: relative;
+    z-index: 1;
   }
 
   /* Film grain over everything — barely there, but it takes the digital edge off. */
@@ -119,6 +140,8 @@
   }
 
   .btn-gold {
+    position: relative;
+    overflow: hidden;
     color: #1b1406;
     background: linear-gradient(180deg, #f0d892 0%, #d1aa50 46%, #a8842f 100%);
     box-shadow:
@@ -139,6 +162,21 @@
   .btn-gold:active:not(:disabled) {
     transform: translateY(0);
     filter: brightness(0.96);
+  }
+
+  .btn-gold::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / 0.35) 50%, transparent 70%);
+    transform: translateX(-130%);
+    transition: transform 0.7s ease;
+  }
+  @media (hover: hover) {
+    .btn-gold:hover:not(:disabled)::after {
+      transform: translateX(130%);
+    }
   }
 
   .btn-outline {
@@ -202,8 +240,15 @@
   }
 
   .panel {
-    background: linear-gradient(180deg, rgb(23 23 27 / 0.96), rgb(14 14 17 / 0.96));
-    border: 1px solid rgb(201 162 74 / 0.22);
+    background:
+      radial-gradient(120% 80% at 50% 0%, rgb(201 162 74 / 0.06), transparent 60%),
+      linear-gradient(180deg, rgb(40 31 50 / 0.96), rgb(27 21 35 / 0.96));
+    border: 1px solid rgb(201 162 74 / 0.24);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.04),
+      inset 0 0 0 4px rgb(23 18 29 / 0.55),
+      inset 0 0 0 5px rgb(201 162 74 / 0.07),
+      0 30px 60px -30px rgb(0 0 0 / 0.8);
   }
 
   /* Small gold brackets in opposite corners — a framed, engraved feel. */
@@ -249,12 +294,59 @@
     color: transparent;
   }
 
+  /* Gold foil: a slow band of light travels across the lettering. */
+  .foil {
+    background: linear-gradient(
+      100deg,
+      #a8842f 0%,
+      #dcb862 30%,
+      #fff3c9 45%,
+      #dcb862 60%,
+      #a8842f 100%
+    );
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: foil-sweep 7s ease-in-out infinite;
+  }
+
+  /* Bluff ticker: table talk drifting past under the header. */
+  .ticker {
+    display: flex;
+    width: max-content;
+    animation: ticker 70s linear infinite;
+  }
+
+  /* One sweep of light across a winning row or a gold button. */
+  .sheen {
+    position: relative;
+    overflow: hidden;
+  }
+  .sheen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(105deg, transparent 35%, rgb(255 240 200 / 0.14) 50%, transparent 65%);
+    transform: translateX(-120%);
+    animation: sheen 6.5s ease-in-out 1.5s infinite;
+  }
+
+  /* A face-down playing card: burgundy lattice with a gold frame. */
+  .card-back {
+    background:
+      repeating-linear-gradient(45deg, rgb(201 162 74 / 0.22) 0 1px, transparent 1px 9px),
+      repeating-linear-gradient(-45deg, rgb(201 162 74 / 0.22) 0 1px, transparent 1px 9px),
+      radial-gradient(circle at 50% 50%, #6d1526, #3a0a14 80%);
+  }
+
   .input-luxe {
     width: 100%;
     min-height: 3rem;
     padding: 0.75rem 1rem;
     border-radius: 2px;
-    background: rgb(9 9 11 / 0.7);
+    background: rgb(23 18 29 / 0.75);
     border: 1px solid rgb(242 233 214 / 0.14);
     color: var(--color-ivory);
     font-size: 1rem;
@@ -273,7 +365,37 @@
   }
 }
 
+@keyframes foil-sweep {
+  0%,
+  100% {
+    background-position: 100% 0;
+  }
+  50% {
+    background-position: 0% 0;
+  }
+}
+@keyframes ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes sheen {
+  0%,
+  70% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .foil,
+  .ticker,
+  .sheen::after {
+    animation: none !important;
+  }
+
   *,
   *::before,
   *::after {
@@ -289,7 +411,7 @@
   .board-shell {
     position: relative;
     padding: 0.5rem 1.5rem 1rem;
-    background: linear-gradient(180deg, rgb(23 23 27 / 0.96), rgb(14 14 17 / 0.96));
+    background: linear-gradient(180deg, rgb(40 31 50 / 0.96), rgb(27 21 35 / 0.96));
     border: 1px solid rgb(201 162 74 / 0.22);
   }
   .board-shell::before,

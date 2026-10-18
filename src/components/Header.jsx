@@ -1,5 +1,5 @@
 import { RotateCcw } from 'lucide-react';
-import { Logo } from './Ornaments.jsx';
+import { BluffTicker, Logo } from './Ornaments.jsx';
 
 const PHASES = {
   closed: { short: 'Table closed', long: 'Table closed', dot: 'bg-ash', ring: 'border-ivory/10 text-smoke' },
@@ -30,7 +30,8 @@ export function SessionIndicator({ phase, roundsPlayed }) {
 
 export default function Header({ phase, roundsPlayed, onNewGame }) {
   return (
-    <header className="relative z-10 border-b border-gold/12">
+    <header className="relative z-10">
+      <div className="border-b border-gold/12 bg-ink/40 backdrop-blur-[2px]">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-3.5 sm:gap-3 sm:px-6 sm:py-5 lg:px-8">
         <a href="#top" className="group flex min-w-0 items-center gap-3 rounded-sm" aria-label="Bluff Night, The House of Bluff">
           <Logo className="shrink-0 transition-transform duration-500 group-hover:rotate-90" />
@@ -52,6 +53,8 @@ export default function Header({ phase, roundsPlayed, onNewGame }) {
           </button>
         </div>
       </div>
+      </div>
+      <BluffTicker />
     </header>
   );
 }

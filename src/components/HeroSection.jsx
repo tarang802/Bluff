@@ -3,16 +3,31 @@ import { Crown } from 'lucide-react';
 import { AnimatedNumber, SuitRow } from './Ornaments.jsx';
 import { leaderLabel } from '../lib/game.js';
 
+// Three honest cards and one played face-down — the bluff.
 const FAN = [
-  { rank: 'Q', suit: '♦', red: true, rotate: -16, x: -118, y: 26, delay: 0.15 },
-  { rank: 'K', suit: '♥', red: true, rotate: -4, x: -40, y: 4, delay: 0.25 },
-  { rank: 'A', suit: '♠', red: false, rotate: 9, x: 44, y: 14, delay: 0.35 },
+  { rank: 'Q', suit: '♦', red: true, rotate: -18, x: -150, y: 34, delay: 0.15 },
+  { rank: 'K', suit: '♥', red: true, rotate: -6, x: -64, y: 6, delay: 0.25 },
+  { rank: 'A', suit: '♠', red: false, rotate: 6, x: 22, y: 6, delay: 0.35 },
+  { faceDown: true, rotate: 19, x: 112, y: 34, delay: 0.5 },
 ];
+
+function CardBack() {
+  return (
+    <div className="relative h-[232px] w-[164px] rounded-[10px] border border-gold/55 bg-[#14070b] p-2 shadow-[0_30px_60px_-20px_rgb(0_0_0/0.9)]">
+      <div className="card-back relative grid h-full w-full place-items-center rounded-[6px] border border-gold/30">
+        <span className="absolute inset-3 rounded-[4px] border border-gold/20" />
+        <span className="relative grid h-16 w-16 rotate-45 place-items-center border border-gold/70 bg-[#2a0710]">
+          <span className="-rotate-45 font-display text-3xl text-gold-bright">♠</span>
+        </span>
+      </div>
+    </div>
+  );
+}
 
 function PlayingCard({ rank, suit, red }) {
   const tone = red ? 'text-wine-bright' : 'text-gold-bright';
   return (
-    <div className="relative h-[232px] w-[164px] rounded-[10px] border border-gold/45 bg-[linear-gradient(160deg,#1c1b1f,#0e0e11)] p-2 shadow-[0_30px_60px_-20px_rgb(0_0_0/0.9)]">
+    <div className="relative h-[232px] w-[164px] rounded-[10px] border border-gold/45 bg-[linear-gradient(160deg,#2c2236,#17111e)] p-2 shadow-[0_30px_60px_-20px_rgb(0_0_0/0.9)]">
       <div className="relative h-full w-full rounded-[6px] border border-gold/15">
         <div className={`absolute top-2 left-2.5 text-center font-display leading-none ${tone}`}>
           <div className="text-2xl font-semibold">{rank}</div>
@@ -69,7 +84,7 @@ export default function HeroSection({ playerCount, roundsPlayed, champions }) {
           >
             EVERY HAND
             <br />
-            HAS A <em className="gold-text pr-2 font-medium italic">STORY.</em>
+            HAS A <em className="foil pr-2 font-medium italic">STORY.</em>
           </motion.h1>
 
           <motion.p
@@ -79,6 +94,15 @@ export default function HeroSection({ playerCount, roundsPlayed, champions }) {
             transition={{ duration: 0.7, delay: 0.2 }}
           >
             Every bluff counts. Every round matters. One player takes the crown.
+          </motion.p>
+          <motion.p
+            className="mt-4 flex items-center gap-3 font-display text-base text-gold/80 italic sm:text-lg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.7, delay: 0.35 }}
+          >
+            <span aria-hidden="true" className="h-px w-6 bg-wine-bright/70" />
+            “Three Kings,” he said. Nobody believed him.
           </motion.p>
 
           <motion.dl
@@ -111,13 +135,13 @@ export default function HeroSection({ playerCount, roundsPlayed, champions }) {
           <div className="absolute inset-0 grid place-items-center">
             {FAN.map((c) => (
               <motion.div
-                key={c.rank}
+                key={c.rank ?? 'back'}
                 className="absolute"
                 initial={{ opacity: 0, y: 40, rotate: 0, x: 0 }}
                 animate={{ opacity: 1, y: c.y, rotate: c.rotate, x: c.x }}
                 transition={{ duration: 0.9, delay: c.delay, ease: [0.22, 1, 0.36, 1] }}
               >
-                <PlayingCard {...c} />
+                {c.faceDown ? <CardBack /> : <PlayingCard {...c} />}
               </motion.div>
             ))}
           </div>

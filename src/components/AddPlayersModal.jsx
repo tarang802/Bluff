@@ -1,14 +1,15 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Plus, X } from 'lucide-react';
+import { Check, Pencil, Plus, X } from 'lucide-react';
 import Modal from './Modal.jsx';
 import { Avatar } from './Ornaments.jsx';
 import { MAX_NAME_LENGTH, MAX_PLAYERS, MIN_PLAYERS, pad2 } from '../lib/game.js';
 
-export default function AddPlayersModal({ open, onClose, players, scores, inProgress, onAdd, onRemove }) {
+export default function AddPlayersModal({ open, onClose, players, scores, inProgress, onAdd, onRemove, onRename }) {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [renaming, setRenaming] = useState(null); // { id, draft, error }
   const inputRef = useRef(null);
   const inputId = useId();
   const errorId = useId();
@@ -20,8 +21,21 @@ export default function AddPlayersModal({ open, onClose, players, scores, inProg
       setName('');
       setError('');
       setNotice('');
+      setRenaming(null);
     }
   }, [open]);
+
+  const saveRename = () => {
+    const player = players.find((p) => p.id === renaming.id);
+    const result = onRename(renaming.id, renaming.draft);
+    if (!result.ok) {
+      setRenaming((r) => ({ ...r, error: result.error }));
+      return;
+    }
+    setRenaming(null);
+    setError('');
+    setNotice(player && player.name !== result.name ? `${player.name} is now ${result.name}.` : '');
+  };
 
   const submit = (e) => {
     e.preventDefault();
@@ -131,19 +145,68 @@ export default function AddPlayersModal({ open, onClose, players, scores, inProg
                   transition={{ duration: 0.25 }}
                   className="overflow-hidden"
                 >
-                  <div className="flex items-center gap-3 py-2.5">
-                    <span className="w-6 font-caps text-[0.6rem] tracking-[0.15em] text-ash">{pad2(i + 1)}</span>
-                    <Avatar name={p.name} size="sm" />
-                    <span className="min-w-0 flex-1 truncate text-ivory/90">{p.name}</span>
-                    {inProgress && (
-                      <span className="font-caps text-[0.58rem] tracking-[0.18em] text-ash uppercase">
-                        <span className="text-ivory/70">{scores.get(p.id) ?? 0}</span> pts
-                      </span>
-                    )}
-                    <button type="button" className="icon-btn" aria-label={`Remove ${p.name}`} title="Remove player" onClick={() => remove(p.id)}>
-                      <X size={16} strokeWidth={1.7} />
-                    </button>
-                  </div>
+                  {renaming?.id === p.id ? (
+                    <form
+                      className="py-2"
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        saveRename();
+                      }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="w-6 font-caps text-[0.6rem] tracking-[0.15em] text-ash">{pad2(i + 1)}</span>
+                        <input
+                          autoFocus
+                          className="input-luxe min-h-11 flex-1 py-2"
+                          value={renaming.draft}
+                          maxLength={MAX_NAME_LENGTH + 5}
+                          aria-label={`New name for ${p.name}`}
+                          aria-invalid={renaming.error ? 'true' : 'false'}
+                          autoComplete="off"
+                          autoCapitalize="words"
+                          spellCheck={false}
+                          onChange={(e) => setRenaming({ ...renaming, draft: e.target.value, error: '' })}
+                          onKeyDown={(e) => {
+                            // Esc cancels the rename instead of closing the whole sheet.
+                            if (e.key === 'Escape') {
+                              e.stopPropagation();
+                              setRenaming(null);
+                            }
+                          }}
+                        />
+                        <button type="submit" className="icon-btn text-gold-bright" aria-label="Save name">
+                          <Check size={17} strokeWidth={2} />
+                        </button>
+                        <button type="button" className="icon-btn" aria-label="Cancel rename" onClick={() => setRenaming(null)}>
+                          <X size={16} strokeWidth={1.7} />
+                        </button>
+                      </div>
+                      {renaming.error && <p className="mt-1.5 pl-8 text-xs text-[#f0a3b1]">{renaming.error}</p>}
+                    </form>
+                  ) : (
+                    <div className="flex items-center gap-2 py-2 sm:gap-3">
+                      <span className="w-6 font-caps text-[0.6rem] tracking-[0.15em] text-ash">{pad2(i + 1)}</span>
+                      <Avatar name={p.name} size="sm" />
+                      <span className="min-w-0 flex-1 truncate text-ivory/90">{p.name}</span>
+                      {inProgress && (
+                        <span className="font-caps text-[0.58rem] tracking-[0.18em] whitespace-nowrap text-ash uppercase">
+                          <span className="text-ivory/70">{scores.get(p.id) ?? 0}</span> pts
+                        </span>
+                      )}
+                      <button
+                        type="button"
+                        className="icon-btn"
+                        aria-label={`Rename ${p.name}`}
+                        title="Rename player"
+                        onClick={() => setRenaming({ id: p.id, draft: p.name, error: '' })}
+                      >
+                        <Pencil size={15} strokeWidth={1.7} />
+                      </button>
+                      <button type="button" className="icon-btn -ml-1" aria-label={`Remove ${p.name}`} title="Remove player" onClick={() => remove(p.id)}>
+                        <X size={16} strokeWidth={1.7} />
+                      </button>
+                    </div>
+                  )}
                 </motion.li>
               ))}
             </AnimatePresence>

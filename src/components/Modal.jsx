@@ -43,7 +43,7 @@ export default function Modal({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
-          <div aria-hidden="true" className="absolute inset-0 bg-black/75 backdrop-blur-[3px]" onClick={onClose} />
+          <div aria-hidden="true" className="absolute inset-0 bg-[#0d0a12]/80 backdrop-blur-[3px]" onClick={onClose} />
           <motion.div
             ref={panelRef}
             role={role}

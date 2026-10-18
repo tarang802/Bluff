@@ -31,7 +31,7 @@ export default function WinnerCelebration({ data, onDone }) {
       {data && (
         <motion.div
           key={data.key}
-          className="fixed inset-0 z-[55] grid cursor-pointer place-items-center bg-black/70 px-6 backdrop-blur-[2px]"
+          className="fixed inset-0 z-[55] grid cursor-pointer place-items-center bg-[#0d0a12]/75 px-6 backdrop-blur-[2px]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.35 } }}
@@ -79,7 +79,7 @@ export default function WinnerCelebration({ data, onDone }) {
               THE TABLE HAS SPOKEN.
             </motion.h2>
             <motion.p
-              className="gold-text mt-5 max-w-[90vw] font-display text-[2.6rem] leading-[1.05] font-semibold break-words italic min-[360px]:text-5xl sm:text-7xl"
+              className="foil mt-5 max-w-[90vw] font-display text-[2.6rem] leading-[1.05] font-semibold break-words italic min-[360px]:text-5xl sm:text-7xl"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, type: 'spring', stiffness: 260, damping: 18 }}

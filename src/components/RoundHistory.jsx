@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Pencil } from 'lucide-react';
-import { Avatar } from './Ornaments.jsx';
+import { Avatar, SectionTitle } from './Ornaments.jsx';
 import { editTimeLeft, formatCountdown, formatTimestamp, pad2, placingFor } from '../lib/game.js';
 
 const PREVIEW = 6;
@@ -19,17 +19,13 @@ export default function RoundHistory({ rounds, players, now, onEdit }) {
 
   return (
     <section aria-labelledby="history-title" className="mx-auto max-w-3xl">
-      <div className="mb-5 flex items-end justify-between gap-4 border-b border-gold/15 pb-4">
-        <div>
-          <p className="eyebrow text-[0.58rem] text-smoke">Ledger</p>
-          <h2 id="history-title" className="mt-1.5 font-caps text-[0.95rem] font-semibold tracking-[0.14em] whitespace-nowrap text-ivory sm:text-xl sm:tracking-[0.18em]">
-            THE NIGHT&apos;S HISTORY
-          </h2>
-        </div>
-        <p className="font-caps text-[0.6rem] tracking-[0.2em] whitespace-nowrap text-ash uppercase">
-          {rounds.length} {rounds.length === 1 ? 'round' : 'rounds'}
-        </p>
-      </div>
+      <SectionTitle
+        id="history-title"
+        eyebrow="The Ledger"
+        title="THE NIGHT'S HISTORY"
+        suit="♦"
+        meta={`${rounds.length} ${rounds.length === 1 ? 'round' : 'rounds'}`}
+      />
 
       {entries.length === 0 ? (
         <p className="py-6 text-center font-display text-lg text-smoke italic">

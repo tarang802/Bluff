@@ -45,18 +45,23 @@ export function initials(name) {
 
 /** Returns an error message, or null when the name can be seated. */
 export function validateNewPlayer(raw, players) {
+  if (players.length >= MAX_PLAYERS) return `The table seats ${MAX_PLAYERS} players at most.`;
+  return validatePlayerName(raw, players);
+}
+
+/** Name rules shared by adding and renaming; `exceptId` is the player being renamed. */
+export function validatePlayerName(raw, players, exceptId = null) {
   const name = cleanName(raw);
   if (!name) return 'Give the player a name first.';
   if (name.length > MAX_NAME_LENGTH) return `Keep names under ${MAX_NAME_LENGTH + 1} characters.`;
-  if (players.length >= MAX_PLAYERS) return `The table seats ${MAX_PLAYERS} players at most.`;
-  const existing = players.find((p) => nameKey(p.name) === nameKey(name));
+  const existing = players.find((p) => p.id !== exceptId && nameKey(p.name) === nameKey(name));
   if (existing) return `${existing.name} is already seated at the table.`;
   return null;
 }
 
 /**
  * Scores are derived from the round log so they can never drift out of sync
- * with history (undo simply removes the last round). Each round holds
+ * with history (an edit simply rewrites a round's placings). Each round holds
  * `placings` — the winner (place 1) and runner-up (place 2). Placings for
  * players who have since left the table are ignored.
  *

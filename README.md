@@ -11,13 +11,15 @@ Scores are saved in `localStorage`, so a game survives page refreshes on the sam
 - **Players:** 2–15 per table. Blank and duplicate names (case-insensitive) are rejected. Players can be added or removed at any time. Removing someone mid-game asks for confirmation; their points leave the leaderboard, but their rounds stay in the history.
 - **Scoring:** each round, the **winner gets 2 points** and the **runner-up gets 1 point**. Tap the winner first, then the runner-up, then press *Declare Winner*. With only two players, the runner-up is filled in automatically. The leaderboard re-ranks and a short celebration plays.
 - **Ranking:** by score; when scores tie, more round wins comes first.
-- **Undo:** remove the most recent round from the toolbar, the mobile dock, or the toast that appears after each round.
 - **Fix a round (5-minute window):** every round shows an **Edit** button with a countdown for 5 minutes after it is declared. Change the winner and runner-up and scores recalculate instantly. After 5 minutes the round locks for good (marked *Edited* if it was changed).
 - **Leaderboard:** players are ranked by score. Tied players share a rank (1, 1, 3), and gold, silver and bronze accents go to the top three. Phones get compact cards and larger screens get a table.
 - **The Night's History:** a log of every round with the winner, runner-up, points, and the date and time it was recorded, newest first.
 - **Champion screen:** shows the final standings. Tied leaders become joint champions. You can resume an ended game.
 - **New Game** saves the current game to **Past Games**, then starts fresh scores with the same players (after a confirmation). Nothing is ever deleted, and there is no "reset everything" option.
-- **Past Games:** every saved game with its date, time span, number of rounds, champion and final standings. Tap a game to see its standings and full round log. A "Crowns won" tally counts titles per player across all games.
+- **Past Games:** every saved game with its date, time span, number of rounds, champion and final standings. Tap a game to see its standings, its full round log, and a Share button.
+- **Hall of Fame:** all-time records per player across every game: crowns, games, round wins, runner-ups, win rate, best winning streak and lifetime points.
+- **Backup & restore:** save every game (current + Past Games) to a JSON file, and restore it on any phone. Restoring merges: past games combine without duplicates, and a replaced current game is moved to Past Games first. Nothing is deleted.
+- **Install as an app:** add it to the home screen (Install App button on Android; Share → Add to Home Screen on iPhone). It opens full-screen and works offline; the browser is asked to keep its saved data.
 - **Resilient storage:** a broken save is backed up and replaced with a fresh table, and a partly damaged save is repaired. Other tabs stay in sync.
 - **Accessibility:** keyboard navigation, focus trapping in dialogs, Escape to close, and screen-reader text for the standings. Animations are reduced when `prefers-reduced-motion` is set.
 

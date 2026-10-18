@@ -58,7 +58,7 @@ function Row({ player, flash }) {
       transition={{ type: 'spring', stiffness: 380, damping: 34 }}
       className={`relative grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 overflow-hidden border px-3 py-3 sm:gap-4 sm:px-4 md:grid-cols-[5.5rem_1fr_9rem_8rem] md:gap-0 md:border-x-0 md:border-t-0 md:px-0 md:py-4 ${
         ROW_TIER[tier] ?? 'border-ivory/8 bg-char/60 md:bg-transparent'
-      } ${tier ? '' : 'md:border-ivory/8'}`}
+      } ${tier ? '' : 'md:border-ivory/8'} ${player.rank === 1 && tier === 'gold' ? 'sheen' : ''}`}
     >
       {tier && <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-[2px] ${BAR[tier]}`} />}
       {isFlashing && (
