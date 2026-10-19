@@ -348,7 +348,7 @@ function BluffNight() {
     onResume: handleResume,
     onViewChampion: () => setChampionOpen(true),
     onNewGame: handleNewGame,
-    share: roundsPlayed > 0 ? <ShareButtons getText={shareText} label="Share" className="w-full sm:w-auto" size="md:btn-lg" /> : null,
+    share: roundsPlayed > 0 ? <ShareButtons getText={shareText} label="Share" className="w-full sm:w-auto" size="md:px-4 lg:btn-lg" /> : null,
   };
 
   let footnote = null;

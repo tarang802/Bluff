@@ -121,7 +121,7 @@ export default function HeroSection({ playerCount, roundsPlayed, champions }) {
               {leader ? (
                 <span className="flex min-w-0 items-center gap-2.5">
                   <Crown size={22} strokeWidth={1.6} className="shrink-0 text-gold" aria-hidden="true" />
-                  <span className="gold-text truncate pb-1" title={leader}>{leader}</span>
+                  <span className="gold-text line-clamp-2 break-words pb-1" title={leader}>{leader}</span>
                 </span>
               ) : (
                 <span className="text-ash italic">Unclaimed</span>

@@ -186,7 +186,7 @@ export default function ChampionScreen({ open, champions, standings, roundsPlaye
                         {p.rank}
                       </span>
                       <Avatar name={p.name} tier={tier} size="sm" />
-                      <span className="min-w-0 flex-1 truncate text-ivory/90">
+                      <span className="min-w-0 flex-1 line-clamp-2 break-words leading-snug text-ivory/90">
                         {p.name}
                         {tier === 'gold' && <Crown size={13} className="ml-2 inline-block align-[-1px] text-gold" aria-label="Champion" />}
                       </span>

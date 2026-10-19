@@ -124,7 +124,7 @@ export default function RecordWinnerModal({ open, onClose, players, standings, r
                 {place ? `${PLACE_LABEL[place]} +${PLACE_POINTS[place]}` : '·'}
               </span>
               <Avatar name={p.name} tier={place === 1 ? 'gold' : place === 2 ? 'silver' : tierFor(s)} size="md" className="sm:h-14 sm:w-14 sm:text-sm" />
-              <span className="w-full truncate font-display text-base leading-tight font-semibold text-ivory sm:text-lg">{p.name}</span>
+              <span className="w-full line-clamp-2 break-words font-display text-base leading-tight font-semibold text-ivory sm:text-lg">{p.name}</span>
               <span className="font-caps text-[0.58rem] tracking-[0.2em] text-smoke uppercase">
                 <span className={place ? 'text-gold-bright' : 'text-ivory/70'}>{score}</span> {score === 1 ? 'point' : 'points'}
               </span>

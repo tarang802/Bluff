@@ -51,15 +51,16 @@ export default function RoundHistory({ rounds, players, now, onEdit }) {
                     </span>
                     <Avatar name={r.first.name} size="sm" />
                     <div className="min-w-0 flex-1">
-                      <p className="flex items-baseline gap-2">
-                        <span className={`truncate text-[0.95rem] ${r.first.left ? 'text-ash line-through' : 'text-ivory/90'}`}>{r.first.name}</span>
-                        <span className="shrink-0 font-display text-base font-semibold text-gold-bright">+{r.first.points}</span>
+                      {/* Inline text so a wrapped name keeps its points right after the last word. */}
+                      <p className="text-[0.95rem] leading-snug break-words">
+                        <span className={r.first.left ? 'text-ash line-through' : 'text-ivory/90'}>{r.first.name}</span>{' '}
+                        <span className="font-display text-base font-semibold whitespace-nowrap text-gold-bright">+{r.first.points}</span>
                       </p>
                       {r.second && (
-                        <p className="mt-0.5 flex items-baseline gap-1.5 text-xs text-smoke">
-                          <span className="font-caps text-[0.55rem] tracking-[0.15em] text-silver/70 uppercase">2nd</span>
-                          <span className={`truncate ${r.second.left ? 'text-ash line-through' : ''}`}>{r.second.name}</span>
-                          <span className="shrink-0 font-display text-sm font-semibold text-silver">+{r.second.points}</span>
+                        <p className="mt-0.5 text-xs leading-snug break-words text-smoke">
+                          <span className="mr-1.5 font-caps text-[0.55rem] tracking-[0.15em] text-silver/70 uppercase">2nd</span>
+                          <span className={r.second.left ? 'text-ash line-through' : ''}>{r.second.name}</span>{' '}
+                          <span className="font-display text-sm font-semibold whitespace-nowrap text-silver">+{r.second.points}</span>
                         </p>
                       )}
                       {(() => {

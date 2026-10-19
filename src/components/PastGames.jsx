@@ -20,7 +20,7 @@ function GameRounds({ game }) {
             <span className="w-14 shrink-0 font-caps text-[0.55rem] tracking-[0.18em] text-gold/70 uppercase">
               Rd <span className="text-ivory/70">{pad2(game.rounds.length - i)}</span>
             </span>
-            <span className="min-w-0 flex-1 truncate text-ivory/80">
+            <span className="min-w-0 flex-1 line-clamp-2 break-words leading-snug text-ivory/80">
               {first.name} <span className="text-gold-bright">+{first.points}</span>
               {second && (
                 <span className="text-smoke">
@@ -71,14 +71,17 @@ function GameCard({ game }) {
             </span>
           </span>
 
-          <span className="mt-2.5 flex min-w-0 items-center gap-2 sm:mt-0 sm:max-w-[45%] sm:justify-end">
+          {/* Name and points wrap onto separate lines when space is tight, instead of squeezing the name. */}
+          <span className="mt-2.5 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 sm:mt-0 sm:max-w-[48%] sm:justify-end">
             {top ? (
               <>
-                <Crown size={15} strokeWidth={1.7} className="shrink-0 text-gold" aria-hidden="true" />
-                <span className="gold-text line-clamp-2 pr-1 font-display text-lg leading-tight font-semibold break-words italic sm:line-clamp-1">
-                  {game.champions.map((c) => c.name).join(' & ')}
+                <span className="flex min-w-0 items-center gap-2">
+                  <Crown size={15} strokeWidth={1.7} className="shrink-0 text-gold" aria-hidden="true" />
+                  <span className="gold-text line-clamp-2 pr-1 font-display text-lg leading-tight font-semibold break-words italic">
+                    {game.champions.map((c) => c.name).join(' & ')}
+                  </span>
                 </span>
-                <span className="shrink-0 font-caps text-[0.58rem] tracking-[0.18em] text-ash uppercase">
+                <span className="font-caps text-[0.58rem] tracking-[0.18em] whitespace-nowrap text-ash uppercase">
                   {top.score} pts{game.crowned ? '' : ' · unfinished'}
                 </span>
               </>
@@ -117,7 +120,7 @@ function GameCard({ game }) {
                     <li key={p.id} className="flex items-center gap-3 py-2.5">
                       <span className={`w-6 text-center font-display text-lg font-semibold ${RANK_TEXT[tier] ?? 'text-ivory/40'}`}>{p.rank}</span>
                       <Avatar name={p.name} tier={tier} size="sm" />
-                      <span className="min-w-0 flex-1 truncate text-sm text-ivory/90">{p.name}</span>
+                      <span className="min-w-0 flex-1 line-clamp-2 break-words text-sm leading-snug text-ivory/90">{p.name}</span>
                       <span className="hidden text-xs text-ash min-[360px]:inline">
                         {p.roundsWon}W · {p.seconds} 2nd
                       </span>

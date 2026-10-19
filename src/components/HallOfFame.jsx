@@ -31,7 +31,7 @@ export default function HallOfFame({ archive, players, rounds }) {
           <div className="mt-3 flex items-center gap-4">
             <Avatar name={legend.name} tier="gold" size="lg" />
             <div className="min-w-0">
-              <p className="gold-text truncate pb-1 font-display text-3xl leading-tight font-semibold italic">{legend.name}</p>
+              <p className="gold-text line-clamp-2 break-words pb-1 font-display text-3xl leading-tight font-semibold italic">{legend.name}</p>
               <p className="flex items-center gap-1.5 text-sm text-smoke">
                 <Crown size={14} strokeWidth={1.8} className="text-gold" aria-hidden="true" />
                 {legend.crowns} {legend.crowns === 1 ? 'crown' : 'crowns'} · {legend.points} lifetime points
@@ -52,7 +52,7 @@ export default function HallOfFame({ archive, players, rounds }) {
                   <Avatar name={p.name} tier={tier} size="sm" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-display text-lg leading-tight font-semibold text-ivory">{p.name}</p>
+                  <p className="line-clamp-2 break-words font-display text-lg leading-tight font-semibold text-ivory">{p.name}</p>
                   {/* Two tidy lines on phones, one line from sm up. Separators only sit between items. */}
                   <p className="mt-0.5 flex flex-col text-[0.7rem] leading-snug text-smoke lining-nums sm:flex-row sm:items-center sm:gap-2 sm:text-[0.72rem]">
                     <span className="whitespace-nowrap">
@@ -66,7 +66,7 @@ export default function HallOfFame({ archive, players, rounds }) {
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-col items-end">
-                  <span className="flex items-center gap-1 text-gold-bright" title="Crowns">
+                  <span className={`flex items-center gap-1 ${p.crowns > 0 ? 'text-gold-bright' : 'text-ash'}`} title="Crowns">
                     <Crown size={14} strokeWidth={1.8} aria-hidden="true" />
                     <span className="font-display text-lg leading-none font-semibold lining-nums">{p.crowns}</span>
                     <span className="sr-only">crowns</span>

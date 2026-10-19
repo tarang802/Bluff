@@ -30,7 +30,7 @@ export function TableActions({ phase, playerCount, onAddPlayers, onRecord, onRes
     <div className="flex flex-wrap gap-2 sm:gap-3">
       <button
         type="button"
-        className="btn btn-gold btn-lg hidden md:inline-flex"
+        className="btn btn-gold hidden md:inline-flex md:px-4 lg:btn-lg"
         onClick={onRecord}
         disabled={!canRecord}
         title={canRecord ? undefined : `Seat at least ${MIN_PLAYERS} players first`}
@@ -38,7 +38,7 @@ export function TableActions({ phase, playerCount, onAddPlayers, onRecord, onRes
         <Spade />
         Record Round Winner
       </button>
-      <button type="button" className="btn btn-outline flex-1 sm:flex-none md:btn-lg" onClick={onAddPlayers}>
+      <button type="button" className="btn btn-outline flex-1 sm:flex-none md:px-4 lg:btn-lg" onClick={onAddPlayers}>
         <UserPlus size={15} strokeWidth={1.8} aria-hidden="true" />
         {playerCount > 0 ? 'Add / Remove Players' : 'Add Players'}
       </button>

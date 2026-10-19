@@ -187,7 +187,7 @@ export default function AddPlayersModal({ open, onClose, players, scores, inProg
                     <div className="flex items-center gap-2 py-2 sm:gap-3">
                       <span className="w-6 font-caps text-[0.6rem] tracking-[0.15em] text-ash">{pad2(i + 1)}</span>
                       <Avatar name={p.name} size="sm" />
-                      <span className="min-w-0 flex-1 truncate text-ivory/90">{p.name}</span>
+                      <span className="min-w-0 flex-1 line-clamp-2 break-words leading-snug text-ivory/90">{p.name}</span>
                       {inProgress && (
                         <span className="font-caps text-[0.58rem] tracking-[0.18em] whitespace-nowrap text-ash uppercase">
                           <span className="text-ivory/70">{scores.get(p.id) ?? 0}</span> pts
