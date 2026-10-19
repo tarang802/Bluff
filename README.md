@@ -19,7 +19,7 @@ Scores are saved in `localStorage`, so a game survives page refreshes on the sam
 - **Past Games:** every saved game with its date, time span, number of rounds, champion and final standings. Tap a game to see its standings, its full round log, and a Share button.
 - **Hall of Fame:** all-time records per player across every game: crowns, games, round wins, runner-ups, win rate, best winning streak and lifetime points.
 - **Backup & restore:** save every game (current + Past Games) to a JSON file, and restore it on any phone. Restoring merges: past games combine without duplicates, and a replaced current game is moved to Past Games first. Nothing is deleted.
-- **Install as an app:** add it to the home screen (Install App button on Android; Share → Add to Home Screen on iPhone). It opens full-screen and works offline; the browser is asked to keep its saved data.
+- **Install as an app:** an Install banner near the top (phones) and an Install App button in the Vault. Where the browser supports it (Chrome, Edge, Samsung Internet) it opens the install dialog; everywhere else it shows step-by-step instructions for that phone and browser, including how to leave WhatsApp/Instagram's built-in browser first. It opens full-screen and works offline; the browser is asked to keep its saved data.
 - **Resilient storage:** a broken save is backed up and replaced with a fresh table, and a partly damaged save is repaired. Other tabs stay in sync.
 - **Accessibility:** keyboard navigation, focus trapping in dialogs, Escape to close, and screen-reader text for the standings. Animations are reduced when `prefers-reduced-motion` is set.
 

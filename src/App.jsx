@@ -16,6 +16,9 @@ import { ToastProvider, useToast } from './components/ToastNotifications.jsx';
 import ShareButtons from './components/ShareButtons.jsx';
 import BackupPanel from './components/BackupPanel.jsx';
 import { downloadBackup, mergeBackup, parseBackup } from './lib/backup.js';
+import InstallBanner from './components/InstallBanner.jsx';
+import InstallGuide from './components/InstallGuide.jsx';
+import { useInstallPrompt } from './hooks/useInstallPrompt.js';
 import { standingsText } from './lib/share.js';
 import { Divider, SuitRow } from './components/Ornaments.jsx';
 import { useGame } from './hooks/useGame.js';
@@ -55,6 +58,8 @@ function BluffNight() {
   // Latest state for confirmations that run after other changes (e.g. a restore).
   const gameRef = useRef(game);
   gameRef.current = game;
+  const installApp = useInstallPrompt();
+  const [installGuideOpen, setInstallGuideOpen] = useState(false);
   const [championOpen, setChampionOpen] = useState(() => game.endedAt != null);
 
   const standings = useMemo(() => computeStandings(game.players, game.rounds), [game.players, game.rounds]);
@@ -315,6 +320,16 @@ function BluffNight() {
     });
   };
 
+  // Use the browser's own install dialog where it exists; otherwise show the
+  // steps for this phone and browser (iPhone, WhatsApp's browser, Firefox…).
+  const handleInstall = async () => {
+    if (installApp.canPrompt) {
+      if (await installApp.install()) toast.success('Bluff Night installed', { message: 'Open it from your home screen, even offline.' });
+      return;
+    }
+    setInstallGuideOpen(true);
+  };
+
   const runConfirm = () => {
     const action = confirm?.onConfirm;
     setConfirm(null);
@@ -358,6 +373,8 @@ function BluffNight() {
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <Divider className="mb-12 sm:mb-16" glyph="♠" />
 
+          {!installApp.installed && /^(ios|android)/.test(installApp.platform) && <InstallBanner onInstall={handleInstall} />}
+
           <div id="leaderboard" className="scroll-mt-6">
             <Leaderboard
               standings={standings}
@@ -397,7 +414,8 @@ function BluffNight() {
             <BackupPanel
               onBackup={handleBackup}
               onRestoreFile={handleRestoreFile}
-              onInstalled={() => toast.success('Bluff Night installed', { message: 'Open it from your home screen, even offline.' })}
+              onInstall={handleInstall}
+              showInstall={!installApp.installed}
             />
           </div>
         </div>
@@ -461,6 +479,7 @@ function BluffNight() {
       />
       <WinnerCelebration data={celebration} onDone={closeCelebration} />
       <ConfirmationDialog config={confirm} onCancel={() => setConfirm(null)} onConfirm={runConfirm} />
+      <InstallGuide open={installGuideOpen} onClose={() => setInstallGuideOpen(false)} platform={installApp.platform} />
     </div>
   );
 }

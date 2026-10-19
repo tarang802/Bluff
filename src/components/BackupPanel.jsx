@@ -1,14 +1,10 @@
-import { useRef, useState } from 'react';
-import { Download, Share, Smartphone, Upload } from 'lucide-react';
-import { useInstallPrompt } from '../hooks/useInstallPrompt.js';
+import { useRef } from 'react';
+import { Download, Smartphone, Upload } from 'lucide-react';
 import { SectionTitle } from './Ornaments.jsx';
 
 /** Save every game to a file, or bring one back (merged, never overwritten). */
-export default function BackupPanel({ onBackup, onRestoreFile, onInstalled }) {
+export default function BackupPanel({ onBackup, onRestoreFile, onInstall, showInstall }) {
   const fileRef = useRef(null);
-  const { canPrompt, ios, installed, install } = useInstallPrompt();
-  const [showIosHelp, setShowIosHelp] = useState(false);
-  const showInstall = !installed && (canPrompt || ios);
 
   return (
     <section aria-labelledby="backup-title">
@@ -28,18 +24,7 @@ export default function BackupPanel({ onBackup, onRestoreFile, onInstalled }) {
             Restore from File
           </button>
           {showInstall && (
-            <button
-              type="button"
-              className="btn btn-gold flex-1 sm:flex-none"
-              onClick={async () => {
-                if (canPrompt) {
-                  if (await install()) onInstalled?.();
-                } else {
-                  setShowIosHelp((v) => !v);
-                }
-              }}
-              aria-expanded={ios ? showIosHelp : undefined}
-            >
+            <button type="button" className="btn btn-gold flex-1 sm:flex-none" onClick={onInstall}>
               <Smartphone size={15} strokeWidth={1.8} aria-hidden="true" />
               Install App
             </button>
@@ -56,12 +41,6 @@ export default function BackupPanel({ onBackup, onRestoreFile, onInstalled }) {
             }}
           />
         </div>
-        {showIosHelp && (
-          <p className="mt-4 flex flex-wrap items-center gap-1.5 border border-gold/25 bg-gold/5 px-4 py-3 text-sm text-ivory/85">
-            On iPhone: tap <Share size={14} className="text-gold-bright" aria-label="Share" /> <strong>Share</strong> in Safari, then
-            <strong>Add to Home Screen</strong>. It opens like an app and keeps your scores safer.
-          </p>
-        )}
       </div>
     </section>
   );
