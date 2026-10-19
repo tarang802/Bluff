@@ -27,6 +27,14 @@ export function subscribeInstall(fn) {
 
 export const hasInstallPrompt = () => Boolean(deferredPrompt);
 
+/**
+ * Browsers with a real one-tap install dialog (Chrome, Edge, Samsung Internet).
+ * They hand it over via `beforeinstallprompt` once their own checks pass
+ * (a tap on the page and ~30s of use, and not already installed). Safari,
+ * Firefox and in-app browsers have no such dialog.
+ */
+export const supportsInstallPrompt = () => typeof window !== 'undefined' && 'onbeforeinstallprompt' in window;
+
 /** Shows the browser's own install dialog. Resolves true if the user accepted. */
 export async function promptInstall() {
   if (!deferredPrompt) return false;

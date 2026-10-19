@@ -320,8 +320,8 @@ function BluffNight() {
     });
   };
 
-  // Use the browser's own install dialog where it exists; otherwise show the
-  // steps for this phone and browser (iPhone, WhatsApp's browser, Firefox…).
+  // One tap opens the browser's own install dialog (Chrome, Edge, Samsung).
+  // Browsers without one (iPhone, Firefox, in-app browsers) get short steps.
   const handleInstall = async () => {
     if (installApp.canPrompt) {
       if (await installApp.install()) toast.success('Bluff Night installed', { message: 'Open it from your home screen, even offline.' });
@@ -373,7 +373,7 @@ function BluffNight() {
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <Divider className="mb-12 sm:mb-16" glyph="♠" />
 
-          {!installApp.installed && /^(ios|android)/.test(installApp.platform) && <InstallBanner onInstall={handleInstall} />}
+          {installApp.showInstall && /^(ios|android)/.test(installApp.platform) && <InstallBanner onInstall={handleInstall} />}
 
           <div id="leaderboard" className="scroll-mt-6">
             <Leaderboard
@@ -415,7 +415,7 @@ function BluffNight() {
               onBackup={handleBackup}
               onRestoreFile={handleRestoreFile}
               onInstall={handleInstall}
-              showInstall={!installApp.installed}
+              showInstall={installApp.showInstall}
             />
           </div>
         </div>
